@@ -4,6 +4,7 @@ import com.aurea.common.ParsingUtils
 import com.aurea.testgenerator.ast.ASTNodeUtils
 import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.TestType
+import com.aurea.testgenerator.generation.patterns.delegate.DelegateTypes
 import com.aurea.testgenerator.generation.patterns.pojos.PojoTestTypes
 import com.aurea.testgenerator.generation.patterns.springcontrollers.SpringControllersTestTypes
 import com.aurea.testgenerator.generation.patterns.singleton.SingletonTypes
@@ -75,6 +76,7 @@ class TestMethodNomenclature {
                 case SingletonTypes:
                 case SpringControllersTestTypes:
                 case SpringRepositoryTestTypes:
+                case DelegateTypes:
                     return new CallableNameRepository(suffix, context as CallableDeclaration).get()
                 case PojoTestTypes:
                     String prefix = TEST_METHOD_NAME_PREFIXES[type]

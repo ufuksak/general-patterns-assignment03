@@ -31,6 +31,7 @@ class Imports {
 
     //OpenPojo
     static final ImportDeclaration OPEN_POJO_VALIDATOR = parse('com.openpojo.validation.Validator')
+    static final ImportDeclaration OPEN_POJO_VALIDAION_HELPER = parse('com.openpojo.validation.utils.ValidationHelper')
     static final ImportDeclaration OPEN_POJO_POJO_CLASS_FACTORY = parse('com.openpojo.reflection.impl.PojoClassFactory')
     static final ImportDeclaration OPEN_POJO_TESTERS = parse('com.aurea.unittest.commons.pojo.Testers')
     static final ImportDeclaration OPEN_POJO_GETTER_TESTER = parse('com.openpojo.validation.test.impl.GetterTester')
@@ -50,9 +51,16 @@ class Imports {
 
 
     static final ImportDeclaration JUNIT_BEFORE = parse('org.junit.Before')
+    static final ImportDeclaration JUNIT_EQUALS = new ImportDeclaration(new Name('org.junit.Assert.assertEquals'), true, false)
     static final ImportDeclaration INJECT_MOCKS = parse('org.mockito.InjectMocks')
     static final ImportDeclaration MOCK = parse('org.mockito.Mock')
     static final ImportDeclaration MOCKITO = parse('org.mockito.Mockito')
+    static final ImportDeclaration MOCKITO_SPY = new ImportDeclaration(new Name('org.mockito.Mockito.spy'), true, false)
+    static final ImportDeclaration MOCKITO_DO_NOTHING = new ImportDeclaration(new Name('org.mockito.Mockito.doNothing'), true, false)
+    static final ImportDeclaration MOCKITO_VERIFY = new ImportDeclaration(new Name('org.mockito.Mockito.verify'), true, false)
+    static final ImportDeclaration MOCKITO_ANY = new ImportDeclaration(new Name('org.mockito.Mockito.any'), true, false)
+    static final ImportDeclaration MOCKITO_DO_RETURN = new ImportDeclaration(new Name('org.mockito.Mockito.doReturn'), true, false)
+    static final ImportDeclaration MOCKITO_AT_LEAST = new ImportDeclaration(new Name('org.mockito.Mockito.atLeast'), true, false)
     static final ImportDeclaration MOCK_ANNOTATIONS = parse('org.mockito.MockitoAnnotations')
 
     //spring controllers
