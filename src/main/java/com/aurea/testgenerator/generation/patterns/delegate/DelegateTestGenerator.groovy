@@ -12,13 +12,10 @@ import com.aurea.testgenerator.source.Unit
 import com.aurea.testgenerator.value.MockValueFactory
 import com.aurea.testgenerator.value.ValueFactory
 import com.github.javaparser.JavaParser
-import com.github.javaparser.ast.Node
+import com.github.javaparser.ParserConfiguration
 import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.body.Parameter
-import com.github.javaparser.ast.body.VariableDeclarator
-import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.ast.expr.MethodCallExpr
-import com.github.javaparser.ast.stmt.Statement
 import com.github.javaparser.resolution.types.ResolvedType
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
 import groovy.util.logging.Log4j2
@@ -53,9 +50,9 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
             return result
         }
 
-        List<MethodCallExpr> calls = new ArrayList<>()
-        visitStatement(method.body.get(), calls)
-        if (calls.isEmpty()) {
+        def visitor = new DelegateMethodCallVisitor()
+        visitor.visit(method.body.get())
+        if (visitor.calls.isEmpty()) {
             return result
         }
 
@@ -63,7 +60,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         def callsMock = ""
         def verifyBlock = ""
         def testCase = new DelegateTestCaseGenerator(this, method)
-        calls.forEach { call ->
+        visitor.calls.forEach { call ->
             callsMock += testCase.generateArrange(call, unit)
             verifyBlock += testCase.generateAssert(call)
         }
@@ -75,7 +72,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
                 ${callsMock}   
 
                 // act                    
-                ${testCase.generateAct()}
+                ${testCase.generateAct(visitor)}
 
                 // assert    
                 ${verifyBlock}
@@ -90,28 +87,6 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         return typeDeclaration.qualifiedName
     }
 
-    private void visitStatement(Node node, List<MethodCallExpr> calls) {
-        if (node instanceof Statement) {
-            def stmt = node as Statement
-
-            //skip conditional statements
-            if (stmt.isBlockStmt() || stmt.isExpressionStmt() || stmt.isLabeledStmt() || stmt.isReturnStmt() || stmt.isSynchronizedStmt()) {
-                node.getChildNodes().forEach { child -> visitStatement(child, calls) }
-            }
-            return
-        }
-        if (node instanceof MethodCallExpr) {
-            def methodCall = node as MethodCallExpr
-            if (!methodCall.scope.present || methodCall.scope.get().isThisExpr() || methodCall.scope.get().isNameExpr() || methodCall.scope.get().isFieldAccessExpr()) {
-                calls.add(methodCall)
-            }
-            return
-        }
-        if (node instanceof VariableDeclarator || node instanceof Expression) {
-            node.getChildNodes().forEach { child -> visitStatement(child, calls) }
-        }
-    }
-
     @Override
     protected TestType getType() {
         return DelegateTypes.METHOD
@@ -119,9 +94,15 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
 
     protected static TestGeneratorResult addTest(TestGeneratorResult result, MethodDeclaration method, String testCode) {
         def testMethod = new DependableNode<>()
+
+        def configuration = JavaParser.getStaticConfiguration()
+        JavaParser.setStaticConfiguration(new ParserConfiguration());
+
         testMethod.node = JavaParser.parseBodyDeclaration(testCode).asMethodDeclaration()
         testMethod.dependency.imports.addAll(method.static ? [Imports.JUNIT_TEST] : [Imports.JUNIT_TEST, Imports.JUNIT_EQUALS,  Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
+
         result.tests << testMethod
+        JavaParser.setStaticConfiguration(configuration);
         result
     }
 
@@ -135,7 +116,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
             if (declaration.isField()) {
                 return mockFactory.getExpression(declaration.getType())
             }
-            return params.get(a.asNameExpr().name.asString())
+            return params.getOrDefault(a.asNameExpr().name.asString(), mockFactory.getExpression(solver.solve(a).correspondingDeclaration.getType()))
         }.collect().join(", ")
     }
 

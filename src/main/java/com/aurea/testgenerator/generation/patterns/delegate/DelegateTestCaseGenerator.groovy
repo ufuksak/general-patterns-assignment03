@@ -14,6 +14,7 @@ class DelegateTestCaseGenerator {
     private final DelegateTestGenerator testGenerator
     private final MethodDeclaration method
     private final Map<String, String> params
+    private final Map<MethodCallExpr, String> expected = [:]
 
     DelegateTestCaseGenerator(final DelegateTestGenerator testGenerator, MethodDeclaration method) {
         this.testGenerator = testGenerator
@@ -26,12 +27,14 @@ class DelegateTestCaseGenerator {
         ResolvedParameterDeclaration paramDecl = null
         if (call.scope.present && (call.scope.get().isNameExpr() || call.scope.get().isFieldAccessExpr())) {
             def solvedScope = testGenerator.solver.solve(call.scope.get())
-            if (solvedScope.correspondingDeclaration.isField()) {
-                fieldDecl = solvedScope.correspondingDeclaration.asField()
-            } else if (solvedScope.correspondingDeclaration.isParameter()) {
-                paramDecl = solvedScope.correspondingDeclaration.asParameter()
-            } else {
-                throw new NotImplementedException('Cannot handle: ' + call.scope)
+            if (solvedScope.solved) {
+                if (solvedScope.correspondingDeclaration.isField()) {
+                    fieldDecl = solvedScope.correspondingDeclaration.asField()
+                } else if (solvedScope.correspondingDeclaration.isParameter()) {
+                    paramDecl = solvedScope.correspondingDeclaration.asParameter()
+                } else {
+                    throw new NotImplementedException('Cannot handle: ' + call.scope)
+                }
             }
         }
 
@@ -48,6 +51,7 @@ class DelegateTestCaseGenerator {
             def objName = returnType.isPrimitive() ? returnType.asPrimitive().describe() : returnType.asReferenceType().typeDeclaration.name
             mockBlock += "${objName} expected_${++counter} = ${testGenerator.factory.getExpression(returnType).get()};\n"
             mockBlock += "doReturn(expected_${counter})"
+            expected.put(call, "expected_${counter}");
         }
 
         def mockMethodCall = ".${call.name.toString()}(${testGenerator.getMethodCallMockParams(call)});\n"
@@ -73,14 +77,29 @@ class DelegateTestCaseGenerator {
         mockBlock
     }
 
-    String generateAct() {
+    String generateAct(DelegateMethodCallVisitor visitor) {
         def parentMethodParams = params.collect { p -> p.value }.join(", ")
         def actBlock
         if (method.type.isVoidType()) {
             actBlock = "classInstance.${method.name}(${parentMethodParams});"
         } else {
+            if (visitor.returnStatement == null) {
+                throw new NotImplementedException("Cannot handle this case");
+            }
+
+            def solved = testGenerator.solver.solve(visitor.returnStatement.expression.get())
+            def expectedVar = "expected_${counter}"
+            if (solved.correspondingDeclaration.isVariable()) {
+                def varInit = solved.correspondingDeclaration.wrappedNode.initializer.get();
+                if (visitor.calls.contains(varInit)) {
+                    expectedVar = expected.get(varInit)
+                } else {
+                    throw new NotImplementedException("")
+                }
+            }
+
             actBlock = "${method.type.toString()} actual = classInstance.${method.name}(${parentMethodParams});\n" +
-                    "assertEquals(expected_${counter}, actual);"
+                    "assertEquals(${expectedVar}, actual);"
         }
         actBlock
     }

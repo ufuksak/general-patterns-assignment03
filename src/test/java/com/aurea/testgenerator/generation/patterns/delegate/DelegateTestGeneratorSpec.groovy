@@ -205,6 +205,87 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         """
     }
 
+    def "Delegate is a return value of prev call tests generation"() {
+        expect:
+        onClassCodeExpect """
+        class Foo {
+            private long localParam = 5;
+            private FooDelegate fooDelegate = new FooDelegate();
+        
+            public long method1(long param1, FooDelegate delegate) {
+                long value = this.method1Impl1st(param1);
+                delegate.method1Impl2nd(value);
+                return value;
+            }
+        
+            public long method2() {
+                long value = method1Impl1st(this.localParam);
+                this.method1Impl1st(value);
+                return fooDelegate.method1Impl2nd(value); 
+            }
+
+            public long method1Impl1st(long value) {
+                return value * 2;
+            }
+        }
+        
+        class FooDelegate {
+            public long method1Impl2nd(long value) {
+                return value + 100;
+            }
+        }
+        """, """package sample;
+ 
+        import javax.annotation.Generated;
+        import org.junit.Test;
+        import org.springframework.test.util.ReflectionTestUtils;
+        import static org.junit.Assert.assertEquals;
+        import static org.mockito.Mockito.*;
+         
+        @Generated("GeneralPatterns")
+        public class FooPatternTest {
+         
+            @Test
+            public void testMethod1() {
+                // arrange
+                Foo classInstance = spy(Foo.class);
+                long expected_1 = 42L;
+                doReturn(expected_1).when(classInstance).method1Impl1st(anyLong());
+                FooDelegate delegate_delegate = mock(FooDelegate.class);
+                long expected_2 = 42L;
+                doReturn(expected_2).when(delegate_delegate).method1Impl2nd(anyLong());
+                // act
+                long actual = classInstance.method1(42L, delegate_delegate);
+                assertEquals(expected_1, actual);
+                // assert
+                verify(classInstance, atLeast(1)).method1Impl1st(42L);
+                verify(delegate_delegate, atLeast(1)).method1Impl2nd(anyLong());
+            }
+         
+            @Test
+            public void testMethod2() {
+                // arrange
+                Foo classInstance = spy(Foo.class);
+                long expected_1 = 42L;
+                doReturn(expected_1).when(classInstance).method1Impl1st(anyLong());
+                long expected_2 = 42L;
+                doReturn(expected_2).when(classInstance).method1Impl1st(anyLong());
+                FooDelegate delegate_fooDelegate = mock(FooDelegate.class);
+                long expected_3 = 42L;
+                doReturn(expected_3).when(delegate_fooDelegate).method1Impl2nd(anyLong());
+                ReflectionTestUtils.setField(classInstance, "fooDelegate", delegate_fooDelegate);
+                // act
+                long actual = classInstance.method2();
+                assertEquals(expected_3, actual);
+                // assert
+                verify(classInstance, atLeast(1)).method1Impl1st(anyLong());
+                verify(classInstance, atLeast(1)).method1Impl1st(anyLong());
+                verify(delegate_fooDelegate, atLeast(1)).method1Impl2nd(anyLong());
+            }
+        }
+        """
+    }
+
     @Override
     TestGenerator generator() {
         new DelegateTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory, new MockValueFactory())
