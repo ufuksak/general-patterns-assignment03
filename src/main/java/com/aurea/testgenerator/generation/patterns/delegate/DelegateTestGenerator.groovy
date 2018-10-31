@@ -19,12 +19,9 @@ import com.github.javaparser.ast.body.VariableDeclarator
 import com.github.javaparser.ast.expr.Expression
 import com.github.javaparser.ast.expr.MethodCallExpr
 import com.github.javaparser.ast.stmt.Statement
-import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration
-import com.github.javaparser.resolution.declarations.ResolvedParameterDeclaration
 import com.github.javaparser.resolution.types.ResolvedType
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
 import groovy.util.logging.Log4j2
-import org.apache.commons.lang3.NotImplementedException
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
@@ -65,74 +62,10 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         def instanceCode = """${unit.className} classInstance = spy(${unit.className}.class);"""
         def callsMock = ""
         def verifyBlock = ""
-        def params = getMethodParamsCode(method)
-        def counter = 0
-//        def testCase = new DelegateTestCaseGenerator();
+        def testCase = new DelegateTestCaseGenerator(this, method)
         calls.forEach { call ->
-
-            ResolvedFieldDeclaration fieldDecl = null
-            ResolvedParameterDeclaration paramDecl = null
-            if (call.scope.present && (call.scope.get().isNameExpr() || call.scope.get().isFieldAccessExpr())) {
-                def solvedScope = solver.solve(call.scope.get());
-                if (solvedScope.correspondingDeclaration.isField()) {
-                    fieldDecl = solvedScope.correspondingDeclaration.asField()
-                } else if (solvedScope.correspondingDeclaration.isParameter()) {
-                    paramDecl = solvedScope.correspondingDeclaration.asParameter()
-                } else {
-                    throw new NotImplementedException('Cannot handle: ' + call.scope);
-                }
-            }
-
-            def solved = solver.solve(call)
-            if (!solved.solved) {
-                throw new IllegalStateException('Cannot handle: ' + call);
-            }
-
-            def returnType = solved.correspondingDeclaration.returnType
-            def mockBlock = "";
-            if (returnType.isVoid()) {
-                mockBlock += "doNothing()"
-            } else {
-                def objName = returnType.isPrimitive() ? returnType.asPrimitive().describe() : returnType.asReferenceType().typeDeclaration.name
-                mockBlock += "${objName} expected_${++counter} = ${this.factory.getExpression(returnType).get()};\n"
-                mockBlock += "doReturn(expected_${counter})"
-            }
-
-            def mockMethodCall = ".${call.name.toString()}(${this.getMethodCallMockParams(call)});\n";
-            def callingObj;
-            if (fieldDecl != null) {
-                callingObj = "delegate_${fieldDecl.name}";
-                mockBlock += ".when(${callingObj})${mockMethodCall}";
-                if (fieldDecl.getType().isReferenceType()) {
-                    def typeName = getTypeReference(fieldDecl.getType(), unit)
-                    mockBlock = "${typeName} delegate_${fieldDecl.name} = mock(${typeName}.class);\n" + mockBlock + "\nReflectionTestUtils.setField(classInstance, \"${fieldDecl.name}\", delegate_${fieldDecl.name});"
-                } else {
-                    mockBlock = mockBlock + "\nReflectionTestUtils.setField(classInstance, \"${fieldDecl.name}\", delegate_${fieldDecl.name});"
-                }
-            } else if (paramDecl != null) {
-                callingObj = "delegate_${paramDecl.name}";
-                mockBlock += ".when(${callingObj})${mockMethodCall}";
-                def typeName = getTypeReference(paramDecl.getType(), unit)
-                mockBlock = "${typeName}  delegate_${paramDecl.name} = mock(${typeName}.class);\n" + mockBlock
-                params.put(paramDecl.name, "delegate_${paramDecl.name}")
-            } else {
-                callingObj = "classInstance"
-                mockBlock += ".when(${callingObj})${mockMethodCall}";
-            }
-
-            callsMock += mockBlock
-//            callsMock += testCase.generateArrange()
-            verifyBlock += "verify(${callingObj}, atLeast(1)).${call.name.toString()}(${this.getMethodVerifyParams(call, params)});\n"
-//            verifyBlock += testCase.generateAssert()
-        }
-
-        def parentMethodParams = params.collect { p -> p.value }.join(", ")
-        def actBlock
-        if (method.type.isVoidType()) {
-            actBlock = "classInstance.${method.name}(${parentMethodParams});"
-        } else {
-            actBlock = "${method.type.toString()} actual = classInstance.${method.name}(${parentMethodParams});\n" +
-                    "assertEquals(expected_${counter}, actual);"
+            callsMock += testCase.generateArrange(call, unit)
+            verifyBlock += testCase.generateAssert(call)
         }
 
         return addTest(result, method, """@Test
@@ -142,17 +75,17 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
                 ${callsMock}   
 
                 // act                    
-                ${actBlock}
+                ${testCase.generateAct()}
 
                 // assert    
                 ${verifyBlock}
             }""")
     }
 
-    private static String getTypeReference(ResolvedType resolvedType, Unit unit) {
+    protected static String getTypeReference(ResolvedType resolvedType, Unit unit) {
         def typeDeclaration = resolvedType.asReferenceType().typeDeclaration
         if (typeDeclaration.qualifiedName == unit.packageName + "." + typeDeclaration.name) {
-            return typeDeclaration.name;
+            return typeDeclaration.name
         }
         return typeDeclaration.qualifiedName
     }
@@ -196,7 +129,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
     protected String getMethodVerifyParams(MethodCallExpr callExpr, Map<String, String> params) {
         return callExpr.arguments.stream().map { a ->
             if (a.isLiteralExpr()) {
-                return a.asLiteralExpr().toString();
+                return a.asLiteralExpr().toString()
             }
             def declaration = solver.solve(a).correspondingDeclaration
             if (declaration.isField()) {
@@ -228,6 +161,10 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         def key = unit.fullName + "#" + capitalized
         def counter = methodCounter.getOrDefault(key, 0)
         methodCounter.put(key, counter + 1)
-        return counter == 0 ? capitalized : (capitalized + "_" + (counter + 1));
+        return counter == 0 ? capitalized : (capitalized + "_" + (counter + 1))
+    }
+
+    protected JavaParserFacade getSolver() {
+        this.@solver
     }
 }
