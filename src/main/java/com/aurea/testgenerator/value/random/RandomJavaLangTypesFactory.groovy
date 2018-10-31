@@ -153,7 +153,7 @@ class RandomJavaLangTypesFactory implements ReferenceTypeFactory {
         ClassOrInterfaceDeclaration classDeclaration = (type.getTypeDeclaration() as JavaParserClassDeclaration).getWrappedNode()
 
         if (classDeclaration.constructors) {
-            ConstructorDeclaration constructor = classDeclaration.constructors.sort { it.parameters.size() }.first()
+            ConstructorDeclaration constructor = new ArrayList<>(classDeclaration.constructors).sort { it.parameters.size() }.first()
             solver.inject(classDeclaration.findParent(CompilationUnit).get())
             return new InvocationBuilder(valueFactory).build(constructor)
         }

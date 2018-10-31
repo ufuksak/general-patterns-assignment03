@@ -58,9 +58,11 @@ class Imports {
     static final ImportDeclaration MOCKITO_SPY = new ImportDeclaration(new Name('org.mockito.Mockito.spy'), true, false)
     static final ImportDeclaration MOCKITO_DO_NOTHING = new ImportDeclaration(new Name('org.mockito.Mockito.doNothing'), true, false)
     static final ImportDeclaration MOCKITO_VERIFY = new ImportDeclaration(new Name('org.mockito.Mockito.verify'), true, false)
-    static final ImportDeclaration MOCKITO_ANY = new ImportDeclaration(new Name('org.mockito.Mockito.any'), true, false)
+    //todo - zzz: do not use asterik
     static final ImportDeclaration MOCKITO_DO_RETURN = new ImportDeclaration(new Name('org.mockito.Mockito.doReturn'), true, false)
+    static final ImportDeclaration MOCKITO_ANY = new ImportDeclaration(new Name('org.mockito.Mockito'), true, true)
     static final ImportDeclaration MOCKITO_AT_LEAST = new ImportDeclaration(new Name('org.mockito.Mockito.atLeast'), true, false)
+    static final ImportDeclaration MOCKITO_MOCK = new ImportDeclaration(new Name('org.mockito.Mockito.mock'), true, false)
     static final ImportDeclaration MOCK_ANNOTATIONS = parse('org.mockito.MockitoAnnotations')
 
     //spring controllers
@@ -76,6 +78,7 @@ class Imports {
     static final ImportDeclaration MOCK_MVC = parse('org.springframework.test.web.servlet.MockMvc')
     static final ImportDeclaration MOCK_MVC_BUILDERS = parse('org.springframework.test.web.servlet.setup.MockMvcBuilders')
     static final ImportDeclaration MEDIA_TYPE = parse('org.springframework.http.MediaType')
+    static final ImportDeclaration REFLECTION_UTILS = parse('org.springframework.test.util.ReflectionTestUtils')
 
 
     static ImportDeclaration parse(String fullClassName) {
