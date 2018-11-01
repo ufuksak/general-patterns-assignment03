@@ -14,10 +14,10 @@ import com.aurea.testgenerator.value.ValueFactory
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ParserConfiguration
 import com.github.javaparser.ast.body.MethodDeclaration
-import com.github.javaparser.ast.body.Parameter
-import com.github.javaparser.ast.expr.MethodCallExpr
-import com.github.javaparser.resolution.types.ResolvedType
+import com.github.javaparser.ast.expr.Expression
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
+import com.github.javaparser.symbolsolver.model.resolution.SymbolReference
 import groovy.util.logging.Log4j2
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
@@ -79,14 +79,6 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
             }""")
     }
 
-    protected static String getTypeReference(ResolvedType resolvedType, Unit unit) {
-        def typeDeclaration = resolvedType.asReferenceType().typeDeclaration
-        if (typeDeclaration.qualifiedName == unit.packageName + "." + typeDeclaration.name) {
-            return typeDeclaration.name
-        }
-        return typeDeclaration.qualifiedName
-    }
-
     @Override
     protected TestType getType() {
         return DelegateTypes.METHOD
@@ -96,45 +88,14 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         def testMethod = new DependableNode<>()
 
         def configuration = JavaParser.getStaticConfiguration()
-        JavaParser.setStaticConfiguration(new ParserConfiguration());
+        JavaParser.setStaticConfiguration(new ParserConfiguration())
 
         testMethod.node = JavaParser.parseBodyDeclaration(testCode).asMethodDeclaration()
-        testMethod.dependency.imports.addAll(method.static ? [Imports.JUNIT_TEST] : [Imports.JUNIT_TEST, Imports.JUNIT_EQUALS,  Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
+        testMethod.dependency.imports.addAll(method.static ? [Imports.JUNIT_TEST] : [Imports.JUNIT_TEST, Imports.JUNIT_EQUALS, Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
 
         result.tests << testMethod
-        JavaParser.setStaticConfiguration(configuration);
+        JavaParser.setStaticConfiguration(configuration)
         result
-    }
-
-    @SuppressWarnings("GrMethodMayBeStatic")
-    protected String getMethodVerifyParams(MethodCallExpr callExpr, Map<String, String> params) {
-        return callExpr.arguments.stream().map { a ->
-            if (a.isLiteralExpr()) {
-                return a.asLiteralExpr().toString()
-            }
-            def declaration = solver.solve(a).correspondingDeclaration
-            if (declaration.isField()) {
-                return mockFactory.getExpression(declaration.getType())
-            }
-            return params.getOrDefault(a.asNameExpr().name.asString(), mockFactory.getExpression(solver.solve(a).correspondingDeclaration.getType()))
-        }.collect().join(", ")
-    }
-
-    @SuppressWarnings("GrMethodMayBeStatic")
-    protected String getMethodCallMockParams(MethodCallExpr callExpr) {
-        return callExpr.arguments.stream().map {
-            arg -> arg.isLiteralExpr() ? arg.asLiteralExpr().toString() : mockFactory.getExpression(solver.solve(arg).correspondingDeclaration.getType())
-        }.collect().join(", ")
-    }
-
-    protected Map<String, String> getMethodParamsCode(MethodDeclaration method) {
-        return method.parameters.collectEntries {
-            p -> [p.name.asString(), generateTestValue(p)]
-        }
-    }
-
-    protected String generateTestValue(Parameter param) {
-        return factory.getExpression(param.type.resolve()).get()
     }
 
     protected String generateMethodName(MethodDeclaration method, Unit unit) {
@@ -145,7 +106,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         return counter == 0 ? capitalized : (capitalized + "_" + (counter + 1))
     }
 
-    protected JavaParserFacade getSolver() {
-        this.@solver
+    protected SymbolReference<? extends ResolvedValueDeclaration> solve(Expression expression) {
+        solver.solve(expression)
     }
 }

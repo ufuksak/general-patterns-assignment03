@@ -96,7 +96,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
                 return new Object();
             }
         }
-                """, """package sample;
+        """, """package sample;
          
         import javax.annotation.Generated;
         import org.junit.Test;
@@ -282,6 +282,49 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
                 verify(classInstance, atLeast(1)).method1Impl1st(anyLong());
                 verify(delegate_fooDelegate, atLeast(1)).method1Impl2nd(anyLong());
             }
+        }
+        """
+    }
+
+    def "Delegate to call with parameter expression tests generation"() {
+        expect:
+        onClassCodeExpect """
+        class Foo {
+            private long localParam = 5;
+            private final static String CONST = "Const";
+        
+            public void method1(String param1) {
+                String localString = "localString";
+                method1Impl(param1 + CONST + this.localParam + localString);
+            }
+        
+            private String method1Impl(String param) {
+                return param;
+            }
+        }
+        """, """package sample;
+ 
+        import javax.annotation.Generated;
+        import org.junit.Test;
+        import org.springframework.test.util.ReflectionTestUtils;
+        import static org.junit.Assert.assertEquals;
+        import static org.mockito.Mockito.*;
+         
+        @Generated("GeneralPatterns")
+        public class FooPatternTest {
+         
+            @Test
+            public void testMethod1() {
+                // arrange
+                Foo classInstance = spy(Foo.class);
+                String expected_1 = "ABC";
+                doReturn(expected_1).when(classInstance).method1Impl(any());
+                // act
+                classInstance.method1("ABC");
+                // assert
+                verify(classInstance, atLeast(1)).method1Impl(any());
+            }
+         
         }
         """
     }
