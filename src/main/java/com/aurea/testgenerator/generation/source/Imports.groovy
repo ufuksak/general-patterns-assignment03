@@ -55,14 +55,7 @@ class Imports {
     static final ImportDeclaration INJECT_MOCKS = parse('org.mockito.InjectMocks')
     static final ImportDeclaration MOCK = parse('org.mockito.Mock')
     static final ImportDeclaration MOCKITO = parse('org.mockito.Mockito')
-    static final ImportDeclaration MOCKITO_SPY = new ImportDeclaration(new Name('org.mockito.Mockito.spy'), true, false)
-    static final ImportDeclaration MOCKITO_DO_NOTHING = new ImportDeclaration(new Name('org.mockito.Mockito.doNothing'), true, false)
-    static final ImportDeclaration MOCKITO_VERIFY = new ImportDeclaration(new Name('org.mockito.Mockito.verify'), true, false)
-    //todo - zzz: do not use asterik
-    static final ImportDeclaration MOCKITO_DO_RETURN = new ImportDeclaration(new Name('org.mockito.Mockito.doReturn'), true, false)
     static final ImportDeclaration MOCKITO_ANY = new ImportDeclaration(new Name('org.mockito.Mockito'), true, true)
-    static final ImportDeclaration MOCKITO_AT_LEAST = new ImportDeclaration(new Name('org.mockito.Mockito.atLeast'), true, false)
-    static final ImportDeclaration MOCKITO_MOCK = new ImportDeclaration(new Name('org.mockito.Mockito.mock'), true, false)
     static final ImportDeclaration MOCK_ANNOTATIONS = parse('org.mockito.MockitoAnnotations')
 
     //spring controllers
