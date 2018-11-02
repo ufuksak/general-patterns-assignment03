@@ -23,9 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
-@SuppressWarnings("unused")
 @Component
-@Profile("manual")
+@Profile("delegates")
 @Log4j2
 class DelegateTestGenerator extends AbstractMethodTestGenerator {
 
