@@ -5,19 +5,40 @@ import java.util.Objects;
 
 import org.jetbrains.jps.model.java.JavaSourceRootType;
 
+import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiManager;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiType;
 
-public class TestAction extends BaseGenerateAction {
+public class EditorPopupAction extends BaseGenerateAction {
 
+    //todo: handle missing test source folder
     @Override
-    public void actionPerformed(AnActionEvent e) {
+    public void actionPerformed(final AnActionEvent e) {
+        PsiElement element = e.getData(LangDataKeys.PSI_ELEMENT);
+        String method = null;
+        if (element instanceof PsiMethod) {
+            method = ((PsiMethod) element).getName() + "(";
+            JvmParameter[] parameters = ((PsiMethod) element).getParameters();
+            for (int i = 0; i < parameters.length; i++) {
+                method += ((PsiType) parameters[i].getType()).getPresentableText() + " " + parameters[i].getName();
+                if (i < parameters.length - 1) {
+                    method += ", ";
+                }
+            }
+            method += ")";
+        }
+
+
         VirtualFile sourceFile = e.getData(CommonDataKeys.VIRTUAL_FILE);
         assert sourceFile != null;
         Module module = ProjectFileIndex.SERVICE.getInstance(Objects.requireNonNull(e.getProject())).getModuleForFile(sourceFile);
@@ -36,7 +57,7 @@ public class TestAction extends BaseGenerateAction {
             return;
         }
 
-        doGenerationInBackground(e.getProject(), sourceFile, testFile, null);
+        doGenerationInBackground(e.getProject(), sourceFile, testFile, method);
     }
 
     @Override
@@ -55,7 +76,8 @@ public class TestAction extends BaseGenerateAction {
         }
 
         List<VirtualFile> sources = ModuleRootManager.getInstance(module).getSourceRoots(JavaSourceRootType.SOURCE);
-        boolean visible = !sources.isEmpty() && sources.get(0).equals(sourceRoot);
+        boolean visible = "java".equalsIgnoreCase(file.getExtension()) && !sources.isEmpty() && sources.get(0).equals(sourceRoot);
         e.getPresentation().setEnabledAndVisible(visible);
     }
+    
 }

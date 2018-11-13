@@ -2,6 +2,7 @@ package com.aurea.testgenerator.generation.patterns.pojos
 
 import com.aurea.testgenerator.ast.ASTNodeUtils
 import com.aurea.testgenerator.ast.Callability
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.TestGenerator
 import com.aurea.testgenerator.generation.TestGeneratorError
 import com.aurea.testgenerator.generation.TestGeneratorResult
@@ -25,6 +26,7 @@ import groovy.util.logging.Log4j2
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 
 import static com.aurea.testgenerator.generation.patterns.pojos.PojoTestTypes.OPEN_POJO
 import static com.aurea.testgenerator.generation.patterns.pojos.PojoTestTypes.OPEN_POJO_CONSTRUCTORS
@@ -53,6 +55,9 @@ class OpenPojoTestGenerator implements TestGenerator {
     @Autowired
     NomenclatureFactory nomenclatures
 
+    @Autowired
+    ProjectConfiguration projectConfiguration
+
     @Override
     Collection<TestGeneratorResult> generate(Unit unit) {
         List<ClassOrInterfaceDeclaration> classes = unit.cu.findAll(ClassOrInterfaceDeclaration).findAll {
@@ -61,6 +66,9 @@ class OpenPojoTestGenerator implements TestGenerator {
         TestMethodNomenclature testMethodNomenclature = nomenclatures.getTestMethodNomenclature(unit.javaClass)
 
         List<TestGeneratorResult> tests = []
+        if (!StringUtils.isEmpty(projectConfiguration.methodBody)) {
+            return tests
+        }
         for (ClassOrInterfaceDeclaration classDeclaration : classes) {
             TestGeneratorResult result = new TestGeneratorResult()
             result.type = OPEN_POJO

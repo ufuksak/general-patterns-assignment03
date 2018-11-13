@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component
 
 
 @Component
-@Profile(['pojo-tester', 'open-pojo'])
+@Profile(['pojo-tester', 'open-pojo-zz'])
 class PojoTestClassNomenclatureFactory implements TestClassNomenclatureFactory {
     @Override
     TestClassNomenclature newTestClassNomenclature() {

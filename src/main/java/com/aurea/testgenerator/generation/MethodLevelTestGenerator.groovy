@@ -1,14 +1,18 @@
 package com.aurea.testgenerator.generation
 
 import com.aurea.testgenerator.ast.Callability
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.names.NomenclatureFactory
 import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
 import com.aurea.testgenerator.reporting.CoverageReporter
 import com.aurea.testgenerator.source.Unit
 import com.github.javaparser.ast.body.CallableDeclaration
+import com.github.javaparser.ast.body.MethodDeclaration
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
 import groovy.util.logging.Log4j2
+import org.apache.commons.lang3.StringUtils
+import org.springframework.beans.factory.annotation.Autowired
 
 @Log4j2
 abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implements TestGenerator {
@@ -21,7 +25,13 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
 
     protected NomenclatureFactory nomenclatures
 
-    MethodLevelTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter, CoverageReporter coverageReporter, NomenclatureFactory nomenclatures) {
+    @Autowired
+    protected ProjectConfiguration projectConfiguration
+
+    MethodLevelTestGenerator(JavaParserFacade solver,
+                             TestGeneratorResultReporter reporter,
+                             CoverageReporter coverageReporter,
+                             NomenclatureFactory nomenclatures) {
         this.solver = solver
         this.reporter = reporter
         this.coverageReporter = coverageReporter
@@ -35,6 +45,9 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
     }
 
     void visit(T callableDeclaration, Unit unit, List<TestGeneratorResult> results) {
+        if (skip(callableDeclaration)) {
+            return
+        }
         if (shouldBeVisited(unit, callableDeclaration)) {
             try {
                 TestGeneratorResult result = generate(callableDeclaration, unit)
@@ -51,6 +64,17 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
         } else {
             coverageReporter.reportNotCovered(unit, callableDeclaration)
         }
+    }
+
+    private boolean skip(T callableDeclaration) {
+        if (StringUtils.isEmpty(projectConfiguration.methodBody) || !callableDeclaration.isMethodDeclaration()) {
+            return false
+        }
+
+        MethodDeclaration md = callableDeclaration.asMethodDeclaration()
+
+        def methodName = md.name.identifier + "(" + md.parameters.join(", ") + ")"
+        return !StringUtils.equals(methodName, projectConfiguration.methodBody)
     }
 
     protected abstract VoidVisitorAdapter<JavaParserFacade> createVisitor(Unit unit, List<TestGeneratorResult> results)

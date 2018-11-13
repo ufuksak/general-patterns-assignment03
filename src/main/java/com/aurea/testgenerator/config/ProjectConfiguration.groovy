@@ -29,6 +29,7 @@ class ProjectConfiguration {
     String out
     String jacoco
     String methodPrefix
+    String methodBody
 
     FileNameConflictResolutionStrategyType fileNameResolution = FileNameConflictResolutionStrategyType.OVERRIDE
 
