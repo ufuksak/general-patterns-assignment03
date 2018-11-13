@@ -23,6 +23,9 @@ class JavaSourceFinder implements SourceFinder {
     }
 
     StreamEx<Path> javaClasses() throws IOException {
+        if (src.toFile().isFile()) {
+            return StreamEx.of(src)
+        }
         StreamEx.of(Files.walk(src))
                 .filter { Files.isDirectory it }
                 .parallel()

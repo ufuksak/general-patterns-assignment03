@@ -7,7 +7,7 @@ dependencyManagement {
 
     // Consistent Dependency Management configuration across all subprojects
     dependencies {
-        dependency 'org.codehaus.groovy:groovy-all:2.4.12'
+        dependency 'org.codehaus.groovy:groovy-all:2.4.15'
         dependencySet(group: 'com.github.javaparser', version: '3.5.18-aurea') {
             entry 'javaparser-core'
             entry 'javaparser-symbol-solver-core'

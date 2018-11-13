@@ -43,7 +43,8 @@ class BaseConfig {
     TypeSolver combinedTypeSolver(ProjectConfiguration projectConfiguration) {
         def solver = new CombinedTypeSolver(new ReflectionTypeSolver())
 
-        solver.add(new JavaParserTypeSolver(new File(projectConfiguration.src)))
+        def file = new File(projectConfiguration.src)
+        solver.add(new JavaParserTypeSolver(file.isDirectory() ? file : file.parentFile))
 
         projectConfiguration.resolvePaths
                 .collect { new File(it) }
