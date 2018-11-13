@@ -60,15 +60,15 @@ class OpenPojoTestGenerator implements TestGenerator {
 
     @Override
     Collection<TestGeneratorResult> generate(Unit unit) {
+        if (!StringUtils.isEmpty(projectConfiguration.methodBody)) {
+            return Collections.emptyList()
+        }
+
         List<ClassOrInterfaceDeclaration> classes = unit.cu.findAll(ClassOrInterfaceDeclaration).findAll {
             !it.interface
         }
         TestMethodNomenclature testMethodNomenclature = nomenclatures.getTestMethodNomenclature(unit.javaClass)
-
         List<TestGeneratorResult> tests = []
-        if (!StringUtils.isEmpty(projectConfiguration.methodBody)) {
-            return tests
-        }
         for (ClassOrInterfaceDeclaration classDeclaration : classes) {
             TestGeneratorResult result = new TestGeneratorResult()
             result.type = OPEN_POJO

@@ -45,7 +45,7 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
     }
 
     void visit(T callableDeclaration, Unit unit, List<TestGeneratorResult> results) {
-        if (skip(callableDeclaration)) {
+        if (shouldSkip(callableDeclaration)) {
             return
         }
         if (shouldBeVisited(unit, callableDeclaration)) {
@@ -66,7 +66,7 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
         }
     }
 
-    private boolean skip(T callableDeclaration) {
+    private boolean shouldSkip(T callableDeclaration) {
         if (StringUtils.isEmpty(projectConfiguration.methodBody) || !callableDeclaration.isMethodDeclaration()) {
             return false
         }
