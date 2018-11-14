@@ -12,7 +12,6 @@ import java.util.concurrent.ConcurrentHashMap
 class NomenclatureFactory {
 
     Map<JavaClass, TestMethodNomenclature> testMethodNomenclatures = new ConcurrentHashMap<>()
-    Map<JavaClass, TestClassNomenclature> testClassNomenclatures = new ConcurrentHashMap<>()
     Map<JavaClass, Map<String, TestVariableNomenclature>> testVariablesNomenclatures = new ConcurrentHashMap<>()
 
     final ProjectConfiguration projectConfiguration
