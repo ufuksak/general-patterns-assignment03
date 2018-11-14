@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.idea.maven.dom.MavenDomUtil;
+import org.jetbrains.idea.maven.dom.model.MavenDomDependency;
 import org.jetbrains.idea.maven.dom.model.MavenDomProjectModel;
 import org.jetbrains.idea.maven.model.MavenId;
 import org.jetbrains.idea.maven.utils.actions.MavenActionUtil;
@@ -28,6 +29,8 @@ public class AddDependenciesAction extends AnAction {
         TEST_DEPENDENCIES.add(new MavenId("org.assertj", "assertj-core", "2.9.0"));
         TEST_DEPENDENCIES.add(new MavenId("nl.jqno.equalsverifier", "equalsverifier", "2.4.3"));
         TEST_DEPENDENCIES.add(new MavenId("com.aurea", "tests-commons", "1.8.1"));
+        TEST_DEPENDENCIES.add(new MavenId("org.mockito", "mockito-core", "2.15.0"));
+        TEST_DEPENDENCIES.add(new MavenId("org.springframework", "spring-test", "5.0.9.RELEASE"));
     }
 
     @Override
@@ -48,7 +51,8 @@ public class AddDependenciesAction extends AnAction {
                                     StringUtils.equals(d.getArtifactId().getValue(), newDependency.getArtifactId())
                     ).findAny();
                     if (!result.isPresent()) {
-                        MavenDomUtil.createDomDependency(mavenDomProjectModel, null, newDependency);
+                        MavenDomDependency dependency = MavenDomUtil.createDomDependency(mavenDomProjectModel, null, newDependency);
+                        dependency.getScope().setStringValue("test");
                     }
                 });
             });
