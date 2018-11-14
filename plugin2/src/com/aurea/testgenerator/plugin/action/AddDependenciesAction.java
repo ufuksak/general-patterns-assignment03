@@ -31,7 +31,7 @@ public class AddDependenciesAction extends AnAction {
     }
 
     @Override
-    public void actionPerformed(final AnActionEvent e) {
+    public void actionPerformed(AnActionEvent e) {
         VirtualFile file = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
         assert file != null;
         assert e.getProject() != null;
@@ -59,7 +59,7 @@ public class AddDependenciesAction extends AnAction {
     }
 
     @Override
-    public void update(final AnActionEvent e) {
+    public void update(AnActionEvent e) {
         VirtualFile file = CommonDataKeys.VIRTUAL_FILE.getData(e.getDataContext());
         boolean available = MavenActionUtil.hasProject(e.getDataContext()) && MavenActionUtil.isMavenProjectFile(file);
         e.getPresentation().setEnabledAndVisible(available);

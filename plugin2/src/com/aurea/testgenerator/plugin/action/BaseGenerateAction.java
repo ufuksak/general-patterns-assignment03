@@ -57,14 +57,14 @@ abstract class BaseGenerateAction extends AnAction {
         }
 
         VirtualFile testFile = sourceRoots.iterator().next();
-        final PsiDirectory dir = psiManager.findDirectory(testFile);
+        PsiDirectory dir = psiManager.findDirectory(testFile);
         if (dir == null) {
             return;
         }
 
         ProgressManager.getInstance().run(new Task.Backgroundable(project, PluginBundle.message("key.generating.tests"), false) {
             @Override
-            public void run(@NotNull final ProgressIndicator indicator) {
+            public void run(@NotNull ProgressIndicator indicator) {
                 performGeneration(project, testFile, sourceFile, methodBody);
             }
         });
@@ -120,7 +120,7 @@ abstract class BaseGenerateAction extends AnAction {
 
         VfsUtilCore.visitChildrenRecursively(file, new VirtualFileVisitor<VirtualFile>() {
             @Override
-            public boolean visitFile(@NotNull final VirtualFile child) {
+            public boolean visitFile(@NotNull VirtualFile child) {
                 boolean directory = child.isDirectory();
                 if (!directory) {
                     try {
@@ -138,14 +138,14 @@ abstract class BaseGenerateAction extends AnAction {
     }
 
     @Override
-    public void update(final AnActionEvent e) {
+    public void update(AnActionEvent e) {
         VirtualFile file = e.getData(CommonDataKeys.VIRTUAL_FILE);
         if (file == null) {
             e.getPresentation().setEnabledAndVisible(false);
             return;
         }
 
-        final VirtualFile sourceRoot = ProjectFileIndex.SERVICE.getInstance(Objects.requireNonNull(e.getProject())).getSourceRootForFile(file);
+        VirtualFile sourceRoot = ProjectFileIndex.SERVICE.getInstance(Objects.requireNonNull(e.getProject())).getSourceRootForFile(file);
         Module module = ProjectFileIndex.SERVICE.getInstance(Objects.requireNonNull(e.getProject())).getModuleForFile(file);
         if (module == null) {
             e.getPresentation().setEnabledAndVisible(false);
