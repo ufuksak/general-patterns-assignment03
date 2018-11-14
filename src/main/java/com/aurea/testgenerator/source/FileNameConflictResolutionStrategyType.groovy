@@ -5,4 +5,5 @@ enum FileNameConflictResolutionStrategyType {
     OVERRIDE,
     SKIP,
     RENAME,
+    MERGE
 }

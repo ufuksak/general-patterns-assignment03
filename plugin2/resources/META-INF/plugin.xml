@@ -29,13 +29,13 @@
     </extensions>
 
     <actions>
-        <action id="com.TestAction"
-                class="com.TestAction"
-                text="Test action"
+        <action id="com.aurea.testgenerator.plugin.action.ProjectStructureAction"
+                class="com.aurea.testgenerator.plugin.action.ProjectStructureAction"
+                text="Generate tests"
                 description="Generates tests to cover common patterns">
             <add-to-group group-id="ProjectViewPopupMenuModifyGroup" anchor="after" relative-to-action="ProjectViewAnalysisGroup"/>
         </action>
-        <action id="com.EditorPopupAction" class="com.EditorPopupAction" text="Test Editor Menu" description="bla blA">
+        <action id="com.aurea.testgenerator.plugin.action.EditorPopupAction" class="com.aurea.testgenerator.plugin.action.EditorPopupAction" text="Test Editor Menu" description="bla blA">
             <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="$SearchWeb"/>
         </action>
     </actions>

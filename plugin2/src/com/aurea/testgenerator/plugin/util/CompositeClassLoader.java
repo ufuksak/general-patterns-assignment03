@@ -1,4 +1,4 @@
-package com;
+package com.aurea.testgenerator.plugin.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ public class CompositeClassLoader extends ClassLoader {
 
     private final ClassLoader current;
 
-    CompositeClassLoader(final ClassLoader parent, ClassLoader current) {
+    public CompositeClassLoader(final ClassLoader parent, ClassLoader current) {
         super(parent);
         this.current = current;
     }
