@@ -82,27 +82,29 @@ abstract class BaseGenerateAction extends AnAction {
 
             ctx.getBean(Pipeline.class).start();
 
-            if (testFile.isDirectory()) {
-                testFile.getChildren();
-            }
-            if (testFile instanceof NewVirtualFile) {
-                ((NewVirtualFile) testFile).markClean();
-                ((NewVirtualFile) testFile).markDirtyRecursively();
-            }
-
-            RefreshQueue.getInstance().refresh(true, true, () -> postRefresh(project, testFile), testFile);
+            refreshFileTree(testFile, project);
         } catch (Exception ex) {
             log.error(ex);
         }
     }
 
-    private void postRefresh(Project project, VirtualFile file) {
-        VcsDirtyScopeManager dirtyScopeManager = VcsDirtyScopeManager.getInstance(project);
-        if (file.isDirectory()) {
-            dirtyScopeManager.dirDirtyRecursively(file);
-        } else {
-            dirtyScopeManager.fileDirty(file);
+    private void refreshFileTree(VirtualFile testFile, Project project) {
+        if (testFile.isDirectory()) {
+            testFile.getChildren();
         }
+        if (testFile instanceof NewVirtualFile) {
+            ((NewVirtualFile) testFile).markClean();
+            ((NewVirtualFile) testFile).markDirtyRecursively();
+        }
+
+        RefreshQueue.getInstance().refresh(true, true, () -> {
+            VcsDirtyScopeManager dirtyScopeManager = VcsDirtyScopeManager.getInstance(project);
+            if (testFile.isDirectory()) {
+                dirtyScopeManager.dirDirtyRecursively(testFile);
+            } else {
+                dirtyScopeManager.fileDirty(testFile);
+            }
+        }, testFile);
     }
 
     @Override
