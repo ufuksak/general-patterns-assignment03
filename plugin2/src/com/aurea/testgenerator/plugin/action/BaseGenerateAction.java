@@ -129,7 +129,7 @@ abstract class BaseGenerateAction extends AnAction {
                             new OptimizeImportsProcessor(project, psiFile).run();
                         }
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        log.error(e);
                     }
                 }
                 return directory;

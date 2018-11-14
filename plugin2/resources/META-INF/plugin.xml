@@ -20,9 +20,7 @@
 
     <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <!-- uncomment to enable plugin in all products
-    <depends>com.intellij.modules.lang</depends>
-    -->
+    <depends>org.jetbrains.idea.maven</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
@@ -37,6 +35,9 @@
         </action>
         <action id="com.aurea.testgenerator.plugin.action.EditorPopupAction" class="com.aurea.testgenerator.plugin.action.EditorPopupAction" text="Test Editor Menu" description="bla blA">
             <add-to-group group-id="EditorPopupMenu" anchor="before" relative-to-action="$SearchWeb"/>
+        </action>
+        <action id="com.aurea.testgenerator.plugin.action.AddDependenciesAction" class="com.aurea.testgenerator.plugin.action.AddDependenciesAction" text="Add tests dependencies">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
         </action>
     </actions>
 
