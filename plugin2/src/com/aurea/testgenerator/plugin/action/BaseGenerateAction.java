@@ -9,10 +9,11 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.core.env.SimpleCommandLinePropertySource;
 import org.springframework.util.ClassUtils;
 
-import com.aurea.testgenerator.plugin.messages.PluginBundle;
-import com.aurea.testgenerator.plugin.util.CompositeClassLoader;
 import com.aurea.testgenerator.Main;
 import com.aurea.testgenerator.Pipeline;
+import com.aurea.testgenerator.plugin.messages.PluginBundle;
+import com.aurea.testgenerator.plugin.util.CompositeClassLoader;
+import com.intellij.codeInsight.actions.OptimizeImportsProcessor;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -21,14 +22,19 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.DumbService;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ModuleRootManager;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vcs.changes.VcsDirtyScopeManager;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
 import com.intellij.openapi.vfs.newvfs.NewVirtualFile;
 import com.intellij.openapi.vfs.newvfs.RefreshQueue;
 import com.intellij.psi.PsiDirectory;
+import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 
 abstract class BaseGenerateAction extends AnAction {
@@ -104,7 +110,31 @@ abstract class BaseGenerateAction extends AnAction {
             } else {
                 dirtyScopeManager.fileDirty(testFile);
             }
+
+            DumbService.getInstance(project).smartInvokeLater(() -> optimizeImports(testFile, project));
         }, testFile);
+    }
+
+    private void optimizeImports(VirtualFile file, Project project) {
+        PsiDocumentManager.getInstance(project).commitAllDocuments();
+
+        VfsUtilCore.visitChildrenRecursively(file, new VirtualFileVisitor<VirtualFile>() {
+            @Override
+            public boolean visitFile(@NotNull final VirtualFile child) {
+                boolean directory = child.isDirectory();
+                if (!directory) {
+                    try {
+                        PsiFile psiFile = PsiManager.getInstance(project).findFile(child);
+                        if (psiFile != null) {
+                            new OptimizeImportsProcessor(project, psiFile).run();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                return directory;
+            }
+        });
     }
 
     @Override

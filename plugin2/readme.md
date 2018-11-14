@@ -9,6 +9,7 @@ features:
 -merging output with existing files
 -plugin labels bundle properties
 -generating all profiles at once (open-pojo,manual,delegates)
+-automatically remove unused imports
 
 notes:
 -if there is no test source folder in module - generation will not be available (similar to standard JUnit plugin, where generated file is placed to the same folder, as source class)

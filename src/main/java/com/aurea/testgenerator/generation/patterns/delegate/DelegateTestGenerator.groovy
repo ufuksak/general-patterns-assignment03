@@ -65,7 +65,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         }
 
         return addTest(result, method, """@Test
-            public void test${this.generateMethodName(method, unit)}() {
+            public void test${this.generateMethodName(method, unit)}() throws Exception {
                 // arrange
                 ${instanceCode}    
                 ${callsMock}   
@@ -90,7 +90,7 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         JavaParser.setStaticConfiguration(new ParserConfiguration())
 
         testMethod.node = JavaParser.parseBodyDeclaration(testCode).asMethodDeclaration()
-        testMethod.dependency.imports.addAll(method.static ? [Imports.JUNIT_TEST] : [Imports.JUNIT_TEST, Imports.JUNIT_EQUALS, Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
+        testMethod.dependency.imports.addAll([Imports.JUNIT_TEST, Imports.JUNIT_EQUALS, Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
 
         result.tests << testMethod
         JavaParser.setStaticConfiguration(configuration)
