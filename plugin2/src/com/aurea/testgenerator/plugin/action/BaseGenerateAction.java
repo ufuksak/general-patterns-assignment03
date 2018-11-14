@@ -123,7 +123,8 @@ abstract class BaseGenerateAction extends AnAction {
         }
 
         List<VirtualFile> sources = ModuleRootManager.getInstance(module).getSourceRoots(JavaSourceRootType.SOURCE);
-        boolean visible = "java".equalsIgnoreCase(file.getExtension()) && !sources.isEmpty() && sources.get(0).equals(sourceRoot);
+        boolean fileCheck = file.isDirectory() || "java".equalsIgnoreCase(file.getExtension());
+        boolean visible = fileCheck && !sources.isEmpty() && sources.get(0).equals(sourceRoot);
         e.getPresentation().setEnabledAndVisible(visible);
     }
 }

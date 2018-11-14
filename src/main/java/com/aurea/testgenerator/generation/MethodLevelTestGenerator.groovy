@@ -38,6 +38,11 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
         this.nomenclatures = nomenclatures
     }
 
+    @Override
+    String requestTestClassName(Unit unit) {
+        unit.className + this.getClass().getSimpleName().replaceAll("TestGenerator", "") + "Test"
+    }
+
     Collection<TestGeneratorResult> generate(Unit unit) {
         List<TestGeneratorResult> results = []
         createVisitor(unit, results).visit(unit.cu, solver)

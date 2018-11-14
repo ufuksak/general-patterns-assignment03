@@ -30,25 +30,32 @@ class UnitTestGenerator {
         log.info "Registered generators: ${this.generators.collect {it.class.simpleName}}"
     }
 
-    Optional<TestUnit> tryGenerateTest(Unit unitUnderTest) {
-        PackageDeclaration pd = unitUnderTest.cu.getPackageDeclaration().get()
-        TestClassNomenclature classNomenclature = nomenclatureFactory.getTestClassNomenclature(unitUnderTest.javaClass)
-        String testName = classNomenclature.requestTestClassName(unitUnderTest)
-        ClassOrInterfaceDeclaration testClass = newTestClass(testName)
-        CompilationUnit testCu = new CompilationUnit(pd,
-                unitUnderTest.cu.getImports(),
-                NodeList.nodeList(testClass), null)
-        markAsGenerated(testClass, testCu)
-        Unit test = new Unit(testCu, new JavaClass(pd.nameAsString, testName), null)
-        TestUnit testUnit = new TestUnit(test)
-        List<TestGeneratorResult> testGeneratorResults = StreamEx.of(generators).flatMap {
-            it.generate(unitUnderTest).stream()
-        }.toList()
+    List<TestUnit> tryGenerateTest(Unit unitUnderTest) {
+        List<TestUnit> result = new ArrayList<>()
 
-        testUnit.addTestsAndDependencies(StreamEx.of(testGeneratorResults).flatMap { it.tests.stream() }.toList())
+        StreamEx.of(generators).forEach { generator ->
 
-        boolean hasTests = testGeneratorResults.any { it.tests }
-        return hasTests ? Optional.of(testUnit) : Optional.empty()
+            PackageDeclaration pd = unitUnderTest.cu.getPackageDeclaration().get()
+            String testName = generator.requestTestClassName(unitUnderTest)
+            ClassOrInterfaceDeclaration testClass = newTestClass(testName)
+            CompilationUnit testCu = new CompilationUnit(pd,
+                    unitUnderTest.cu.getImports(),
+                    NodeList.nodeList(testClass), null)
+            markAsGenerated(testClass, testCu)
+            Unit test = new Unit(testCu, new JavaClass(pd.nameAsString, testName), null)
+            TestUnit testUnit = new TestUnit(test)
+
+            Collection<TestGeneratorResult> testGeneratorResults = generator.generate(unitUnderTest)
+
+            testUnit.addTestsAndDependencies(StreamEx.of(testGeneratorResults).flatMap { it.tests.stream() }.toList())
+
+            boolean hasTests = testGeneratorResults.any { it.tests }
+            if (hasTests) {
+                result << testUnit
+            }
+        }
+
+        result
     }
 
     @Override

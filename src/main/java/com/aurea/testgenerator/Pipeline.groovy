@@ -41,12 +41,10 @@ class Pipeline {
         long totalUnits = source.size(sourceFilter)
         AtomicInteger counter = new AtomicInteger()
         log.info "Generating tests for ${totalUnits} units"
-        units.map {
+        units.forEach {
             log.info "${counter.incrementAndGet()} / $totalUnits: $it.fullName"
-            unitTestGenerator.tryGenerateTest(it)
+            def list = unitTestGenerator.tryGenerateTest(it)
+            list.each { result -> unitTestWriter.write(result.test) }
         }
-                .filter { it.present }
-                .map { it.get() }
-                .each { unitTestWriter.write(it.test) }
     }
 }

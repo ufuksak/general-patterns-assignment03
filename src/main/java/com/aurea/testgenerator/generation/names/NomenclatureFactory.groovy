@@ -15,12 +15,10 @@ class NomenclatureFactory {
     Map<JavaClass, TestClassNomenclature> testClassNomenclatures = new ConcurrentHashMap<>()
     Map<JavaClass, Map<String, TestVariableNomenclature>> testVariablesNomenclatures = new ConcurrentHashMap<>()
 
-    final TestClassNomenclatureFactory testClassNomenclatureFactory
     final ProjectConfiguration projectConfiguration
 
     @Autowired
-    NomenclatureFactory(TestClassNomenclatureFactory testClassNomenclatureFactory, ProjectConfiguration projectConfiguration) {
-        this.testClassNomenclatureFactory = testClassNomenclatureFactory
+    NomenclatureFactory(ProjectConfiguration projectConfiguration) {
         this.projectConfiguration = projectConfiguration
     }
 
@@ -35,7 +33,4 @@ class NomenclatureFactory {
         variablesPerMethod.computeIfAbsent(methodName, { new StandardVariableNomenclature() })
     }
 
-    TestClassNomenclature getTestClassNomenclature(JavaClass javaClass) {
-        testClassNomenclatures.computeIfAbsent(javaClass, { testClassNomenclatureFactory.newTestClassNomenclature() })
-    }
 }

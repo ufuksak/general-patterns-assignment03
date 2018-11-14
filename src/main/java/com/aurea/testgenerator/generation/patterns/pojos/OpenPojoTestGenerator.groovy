@@ -59,6 +59,11 @@ class OpenPojoTestGenerator implements TestGenerator {
     ProjectConfiguration projectConfiguration
 
     @Override
+    String requestTestClassName(Unit unit) {
+        unit.className + "PojoTest"
+    }
+
+    @Override
     Collection<TestGeneratorResult> generate(Unit unit) {
         if (!StringUtils.isEmpty(projectConfiguration.methodBody)) {
             return Collections.emptyList()
