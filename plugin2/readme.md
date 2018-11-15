@@ -11,9 +11,4 @@ features:
 -generating all profiles at once (open-pojo,manual,delegates)
 -automatically remove unused imports
 -add test dependencies to maven pom.xml from project structure tree context menu (only for pom.xml file)
-
-notes:
--if there is no test source folder in module - generation will not be available (similar to standard JUnit plugin, where generated file is placed to the same folder, as source class)
-
-todo:
--pack plugin to zip and test
+-if there is no test root folder - it will generate based on maven settings
