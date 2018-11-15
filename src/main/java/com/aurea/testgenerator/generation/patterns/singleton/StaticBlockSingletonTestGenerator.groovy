@@ -1,5 +1,6 @@
 package com.aurea.testgenerator.generation.patterns.singleton
 
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.AbstractMethodTestGenerator
 import com.aurea.testgenerator.generation.TestGeneratorResult
 import com.aurea.testgenerator.generation.TestType
@@ -33,8 +34,9 @@ class StaticBlockSingletonTestGenerator extends AbstractMethodTestGenerator {
                                       TestGeneratorResultReporter reporter,
                                       CoverageReporter visitReporter,
                                       NomenclatureFactory nomenclatures,
-                                      SingletonCommonTestGenerator singletonCommonTestGenerator) {
-        super(solver, reporter, visitReporter, nomenclatures)
+                                      SingletonCommonTestGenerator singletonCommonTestGenerator,
+                                      ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, visitReporter, nomenclatures, projectConfiguration)
         this.singletonCommonTestGenerator = singletonCommonTestGenerator
     }
 

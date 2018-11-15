@@ -37,10 +37,10 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         import static org.mockito.Mockito.*;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooDelegateTest {
          
             @Test
-            public void testMethod1() {
+            public void testMethod1() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 doNothing().when(classInstance).method1Impl();
@@ -51,7 +51,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             }
          
             @Test
-            public void testMethod1_2() {
+            public void testMethod1_2() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 doNothing().when(classInstance).method1Impl(null);
@@ -62,7 +62,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             }
          
             @Test
-            public void testMethod2() {
+            public void testMethod2() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 Foo delegate_foo = mock(Foo.class);
@@ -105,10 +105,10 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         import static org.mockito.Mockito.*;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooDelegateTest {
          
             @Test
-            public void testMethod1() {
+            public void testMethod1() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 doNothing().when(classInstance).method1Impl();
@@ -122,7 +122,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             }
          
             @Test
-            public void testMethod1_2() {
+            public void testMethod1_2() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 Object expected_1 = mock(Object.class, RETURNS_DEEP_STUBS);
@@ -172,10 +172,10 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         import static org.mockito.Mockito.*;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooDelegateTest {
          
             @Test
-            public void testMethod1() {
+            public void testMethod1() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 Foo delegate_delegate = mock(Foo.class);
@@ -188,7 +188,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             }
         
             @Test
-            public void testMethod2() {
+            public void testMethod2() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 Foo delegate_localFoo = mock(Foo.class);
@@ -243,10 +243,10 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         import static org.mockito.Mockito.*;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooDelegateTest {
          
             @Test
-            public void testMethod1() {
+            public void testMethod1() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 long expected_1 = 42L;
@@ -263,7 +263,7 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             }
          
             @Test
-            public void testMethod2() {
+            public void testMethod2() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 long expected_1 = 42L;
@@ -311,10 +311,10 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         import static org.mockito.Mockito.*;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooDelegateTest {
          
             @Test
-            public void testMethod1() {
+            public void testMethod1() throws Exception {
                 // arrange
                 Foo classInstance = spy(Foo.class);
                 String expected_1 = "ABC";
@@ -331,6 +331,6 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
 
     @Override
     TestGenerator generator() {
-        new DelegateTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory, new MockValueFactory())
+        new DelegateTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory, new MockValueFactory(), cfg)
     }
 }

@@ -26,7 +26,7 @@ class EagerSingletonTestGeneratorSpec extends MatcherPipelineTest {
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooEagerSingletonTest {
              
                 @Test
                 public void getInstanceOnSecondCallReturnsSameInstance() throws Exception {
@@ -60,7 +60,7 @@ class EagerSingletonTestGeneratorSpec extends MatcherPipelineTest {
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooEagerSingletonTest {
              
                 @Test
                 public void getInstanceOnSecondCallReturnsSameInstance() throws Exception {
@@ -96,7 +96,7 @@ class EagerSingletonTestGeneratorSpec extends MatcherPipelineTest {
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooEagerSingletonTest {
              
                 @Test
                 public void getInstanceOnSecondCallReturnsSameInstance() throws Exception {
@@ -112,6 +112,6 @@ class EagerSingletonTestGeneratorSpec extends MatcherPipelineTest {
     @Override
     TestGenerator generator() {
         new EagerSingletonTestGenerator(solver, reporter, visitReporter, nomenclatureFactory,
-                new SingletonCommonTestGenerator(valueFactory, nomenclatureFactory))
+                new SingletonCommonTestGenerator(valueFactory, nomenclatureFactory), cfg)
     }
 }

@@ -37,7 +37,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
              
                 @Test
                 public void emptyProfileAssignsValues() throws Exception {
@@ -126,7 +126,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
             
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
 
              
                 @Test
@@ -177,7 +177,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
              
                 @Test
                 public void emptyProfileAssignsValues() throws Exception {
@@ -227,7 +227,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
              
                 @Test
                 public void emptyProfileAssignsValues() throws Exception {
@@ -274,7 +274,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
              
                 @Test
                 public void emptyProfileAssignsValues() throws Exception {
@@ -322,7 +322,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooAssignmentCheckStaticFactoryMethodTest {
              
                 @Test
                 public void emptyProfileAssignsValues() throws Exception {
@@ -344,6 +344,7 @@ class AssignmentCheckStaticFactoryMethodTestGeneratorSpec extends MatcherPipelin
                 visitReporter,
                 nomenclatureFactory,
                 valueFactory,
-                softAssertions)
+                softAssertions,
+                cfg)
     }
 }

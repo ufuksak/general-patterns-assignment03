@@ -54,7 +54,7 @@ class SpringControllerDelegatingMethodTestGeneratorSpec extends MatcherPipelineT
         import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
         
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooSpringControllerDelegatingMethodTest {
          
             @InjectMocks()
             private SimpleDelegatingController controllerInstance;
@@ -136,7 +136,7 @@ class SpringControllerDelegatingMethodTestGeneratorSpec extends MatcherPipelineT
         import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
          
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooSpringControllerDelegatingMethodTest {
          
             @InjectMocks()
             private DelegatingWithParametersController controllerInstance;
@@ -280,7 +280,7 @@ class SpringControllerDelegatingMethodTestGeneratorSpec extends MatcherPipelineT
         import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
         
         @Generated("GeneralPatterns")
-        public class FooPatternTest {
+        public class FooSpringControllerDelegatingMethodTest {
          
             @InjectMocks()
             private DelegatingWithReturnValueController controllerInstance;
@@ -315,6 +315,6 @@ class SpringControllerDelegatingMethodTestGeneratorSpec extends MatcherPipelineT
     @Override
     TestGenerator generator() {
         return new SpringControllerDelegatingMethodTestGenerator(solver, reporter, visitReporter, nomenclatureFactory,
-                valueFactory)
+                valueFactory, cfg)
     }
 }

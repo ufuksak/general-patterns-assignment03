@@ -1,5 +1,6 @@
 package com.aurea.testgenerator.generation
 
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.names.NomenclatureFactory
 import com.aurea.testgenerator.reporting.CoverageReporter
 import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
@@ -11,8 +12,11 @@ import org.springframework.stereotype.Component
 
 @Component
 abstract class AbstractMethodTestGenerator extends MethodLevelTestGenerator<MethodDeclaration> {
-    AbstractMethodTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter, CoverageReporter visitReporter, NomenclatureFactory nomenclatures) {
-        super(solver, reporter, visitReporter, nomenclatures)
+
+    AbstractMethodTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter,
+                                CoverageReporter visitReporter, NomenclatureFactory nomenclatures,
+                                ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, visitReporter, nomenclatures, projectConfiguration)
     }
 
     protected VoidVisitorAdapter<JavaParserFacade> createVisitor(Unit unit, List<TestGeneratorResult> results) {

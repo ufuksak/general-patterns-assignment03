@@ -3,6 +3,7 @@ package com.aurea.testgenerator.generation.patterns.staticfactory
 import com.aurea.common.CognitiveComplexityCalculator
 import com.aurea.testgenerator.ast.Callability
 import com.aurea.testgenerator.ast.InvocationBuilder
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.AbstractMethodTestGenerator
 import com.aurea.testgenerator.generation.TestGeneratorResult
 import com.aurea.testgenerator.generation.TestType
@@ -40,8 +41,9 @@ class DifferentInstancesStaticFactoryMethodTestGenerator extends AbstractMethodT
                                                        TestGeneratorResultReporter reporter,
                                                        CoverageReporter visitReporter,
                                                        NomenclatureFactory nomenclatures,
-                                                       ValueFactory valueFactory) {
-        super(solver, reporter, visitReporter, nomenclatures)
+                                                       ValueFactory valueFactory,
+                                                       ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, visitReporter, nomenclatures, projectConfiguration)
         this.valueFactory = valueFactory
     }
 

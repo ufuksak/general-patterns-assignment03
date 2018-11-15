@@ -3,8 +3,8 @@ package com.aurea.testgenerator.generation
 import com.aurea.testgenerator.ast.Callability
 import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.names.NomenclatureFactory
-import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
 import com.aurea.testgenerator.reporting.CoverageReporter
+import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
 import com.aurea.testgenerator.source.Unit
 import com.github.javaparser.ast.body.CallableDeclaration
 import com.github.javaparser.ast.body.MethodDeclaration
@@ -12,7 +12,6 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
 import groovy.util.logging.Log4j2
 import org.apache.commons.lang3.StringUtils
-import org.springframework.beans.factory.annotation.Autowired
 
 @Log4j2
 abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implements TestGenerator {
@@ -25,22 +24,23 @@ abstract class MethodLevelTestGenerator<T extends CallableDeclaration> implement
 
     protected NomenclatureFactory nomenclatures
 
-    @Autowired
     protected ProjectConfiguration projectConfiguration
 
     MethodLevelTestGenerator(JavaParserFacade solver,
                              TestGeneratorResultReporter reporter,
                              CoverageReporter coverageReporter,
-                             NomenclatureFactory nomenclatures) {
+                             NomenclatureFactory nomenclatures,
+                             ProjectConfiguration projectConfiguration) {
         this.solver = solver
         this.reporter = reporter
         this.coverageReporter = coverageReporter
         this.nomenclatures = nomenclatures
+        this.projectConfiguration = projectConfiguration
     }
 
     @Override
-    String requestTestClassName(Unit unit) {
-        unit.className + this.getClass().getSimpleName().replaceAll("TestGenerator", "") + "Test"
+    String getTestClassNameSuffix() {
+        getClass().getSimpleName().replaceAll("TestGenerator", "") + "Test"
     }
 
     Collection<TestGeneratorResult> generate(Unit unit) {

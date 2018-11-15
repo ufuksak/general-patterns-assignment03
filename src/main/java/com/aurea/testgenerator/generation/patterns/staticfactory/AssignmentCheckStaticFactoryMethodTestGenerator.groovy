@@ -3,6 +3,7 @@ package com.aurea.testgenerator.generation.patterns.staticfactory
 import com.aurea.common.CognitiveComplexityCalculator
 import com.aurea.testgenerator.ast.Callability
 import com.aurea.testgenerator.ast.InvocationBuilder
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.AbstractMethodTestGenerator
 import com.aurea.testgenerator.generation.TestGeneratorError
 import com.aurea.testgenerator.generation.TestGeneratorResult
@@ -21,12 +22,7 @@ import com.aurea.testgenerator.source.Unit
 import com.aurea.testgenerator.value.ValueFactory
 import com.github.javaparser.JavaParser
 import com.github.javaparser.ast.body.MethodDeclaration
-import com.github.javaparser.ast.expr.Expression
-import com.github.javaparser.ast.expr.MethodCallExpr
-import com.github.javaparser.ast.expr.NameExpr
-import com.github.javaparser.ast.expr.ObjectCreationExpr
-import com.github.javaparser.ast.expr.SimpleName
-import com.github.javaparser.ast.expr.VariableDeclarationExpr
+import com.github.javaparser.ast.expr.*
 import com.github.javaparser.ast.stmt.ExpressionStmt
 import com.github.javaparser.ast.stmt.ReturnStmt
 import com.github.javaparser.ast.stmt.Statement
@@ -52,8 +48,9 @@ class AssignmentCheckStaticFactoryMethodTestGenerator extends AbstractMethodTest
                                                     CoverageReporter visitReporter,
                                                     NomenclatureFactory nomenclatures,
                                                     ValueFactory valueFactory,
-                                                    SoftAssertions softAssertions) {
-        super(solver, reporter, visitReporter, nomenclatures)
+                                                    SoftAssertions softAssertions,
+                                                    ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, visitReporter, nomenclatures, projectConfiguration)
         this.valueFactory = valueFactory
         this.softAssertions = softAssertions
     }

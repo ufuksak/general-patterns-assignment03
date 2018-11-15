@@ -1,5 +1,6 @@
 package com.aurea.testgenerator.generation
 
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.names.NomenclatureFactory
 import com.aurea.testgenerator.reporting.CoverageReporter
 import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
@@ -13,8 +14,9 @@ import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
 abstract class MethodLevelTestGeneratorWithClassContext<T extends CallableDeclaration> extends
         MethodLevelTestGenerator<T> {
 
-    MethodLevelTestGeneratorWithClassContext(JavaParserFacade solver, TestGeneratorResultReporter reporter, CoverageReporter coverageReporter, NomenclatureFactory nomenclatures) {
-        super(solver, reporter, coverageReporter, nomenclatures)
+    MethodLevelTestGeneratorWithClassContext(JavaParserFacade solver, TestGeneratorResultReporter reporter, CoverageReporter coverageReporter,
+                                             NomenclatureFactory nomenclatures, ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, coverageReporter, nomenclatures, projectConfiguration)
     }
 
     @Override

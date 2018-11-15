@@ -35,7 +35,7 @@ class UnitTestGenerator {
         StreamEx.of(generators).forEach { generator ->
 
             PackageDeclaration pd = unitUnderTest.cu.getPackageDeclaration().get()
-            String testName = generator.requestTestClassName(unitUnderTest)
+            String testName = unitUnderTest.className + generator.getTestClassNameSuffix()
             ClassOrInterfaceDeclaration testClass = newTestClass(testName)
             CompilationUnit testCu = new CompilationUnit(pd,
                     unitUnderTest.cu.getImports(),

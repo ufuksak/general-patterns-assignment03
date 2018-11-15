@@ -1,5 +1,6 @@
 package com.aurea.testgenerator.generation.patterns.delegate
 
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.AbstractMethodTestGenerator
 import com.aurea.testgenerator.generation.TestGeneratorResult
 import com.aurea.testgenerator.generation.TestType
@@ -35,8 +36,9 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
     @Autowired
     DelegateTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter,
                           CoverageReporter visitReporter, NomenclatureFactory nomenclatures,
-                          ValueFactory factory, MockValueFactory mockFactory) {
-        super(solver, reporter, visitReporter, nomenclatures)
+                          ValueFactory factory, MockValueFactory mockFactory,
+                          ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, visitReporter, nomenclatures, projectConfiguration)
         this.factory = factory
         this.mockFactory = mockFactory
     }

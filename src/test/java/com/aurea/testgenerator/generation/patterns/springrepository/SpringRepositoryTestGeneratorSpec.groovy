@@ -36,7 +36,7 @@ class SpringRepositoryTestGeneratorSpec extends MatcherPipelineTest {
             @Generated("GeneralPatterns")
             @RunWith(SpringRunner.class)
             @DataJpaTest
-            public class FooPatternTest {
+            public class FooSpringRepositoryTest {
             
                 @Autowired()
                 private TestEntityManager entityManager;
@@ -93,6 +93,6 @@ class SpringRepositoryTestGeneratorSpec extends MatcherPipelineTest {
 
     @Override
     TestGenerator generator() {
-        new SpringRepositoryTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory)
+        new SpringRepositoryTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory, cfg)
     }
 }

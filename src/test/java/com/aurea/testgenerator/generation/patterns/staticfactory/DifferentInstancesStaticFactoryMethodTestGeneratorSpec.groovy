@@ -21,7 +21,7 @@ class DifferentInstancesStaticFactoryMethodTestGeneratorSpec extends MatcherPipe
             import static org.assertj.core.api.Assertions.assertThat;
             
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooDifferentInstancesStaticFactoryMethodTest {
              
                 @Test
                 public void newFooOnSecondCallCreateDifferentInstance() throws Exception {
@@ -56,7 +56,7 @@ class DifferentInstancesStaticFactoryMethodTestGeneratorSpec extends MatcherPipe
             import static org.assertj.core.api.Assertions.assertThat;
              
             @Generated("GeneralPatterns")
-            public class FooPatternTest {
+            public class FooDifferentInstancesStaticFactoryMethodTest {
              
                 @Test
                 public void newFooOnSecondCallCreateDifferentInstance() throws Exception {
@@ -71,6 +71,6 @@ class DifferentInstancesStaticFactoryMethodTestGeneratorSpec extends MatcherPipe
 
     @Override
     TestGenerator generator() {
-        new DifferentInstancesStaticFactoryMethodTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory)
+        new DifferentInstancesStaticFactoryMethodTestGenerator(solver, reporter, visitReporter, nomenclatureFactory, valueFactory, cfg)
     }
 }

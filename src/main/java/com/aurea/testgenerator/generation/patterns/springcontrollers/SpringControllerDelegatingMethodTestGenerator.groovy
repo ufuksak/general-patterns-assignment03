@@ -1,5 +1,6 @@
 package com.aurea.testgenerator.generation.patterns.springcontrollers
 
+import com.aurea.testgenerator.config.ProjectConfiguration
 import com.aurea.testgenerator.generation.MethodLevelTestGeneratorWithClassContext
 import com.aurea.testgenerator.generation.TestGeneratorError
 import com.aurea.testgenerator.generation.TestGeneratorResult
@@ -81,8 +82,8 @@ class SpringControllerDelegatingMethodTestGenerator extends MethodLevelTestGener
 
     SpringControllerDelegatingMethodTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter,
                                                   CoverageReporter coverageReporter, NomenclatureFactory nomenclatures,
-                                                  ValueFactory valueFactory) {
-        super(solver, reporter, coverageReporter, nomenclatures)
+                                                  ValueFactory valueFactory, ProjectConfiguration projectConfiguration) {
+        super(solver, reporter, coverageReporter, nomenclatures, projectConfiguration)
         this.valueFactory = valueFactory
     }
 

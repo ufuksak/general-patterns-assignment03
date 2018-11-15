@@ -59,8 +59,8 @@ class OpenPojoTestGenerator implements TestGenerator {
     ProjectConfiguration projectConfiguration
 
     @Override
-    String requestTestClassName(Unit unit) {
-        unit.className + "PojoTest"
+    String getTestClassNameSuffix() {
+        "PojoTest"
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.aurea.testgenerator.generation.TestGenerator
 import com.aurea.testgenerator.generation.UnitTestGenerator
 import com.aurea.testgenerator.generation.assertions.SoftAssertions
 import com.aurea.testgenerator.generation.names.NomenclatureFactory
-import com.aurea.testgenerator.generation.names.StandardTestClassNomenclatureFactory
 import com.aurea.testgenerator.reporting.CoverageReporter
 import com.aurea.testgenerator.reporting.TestGeneratorResultReporter
 import com.aurea.testgenerator.source.JavaSourceFinder
@@ -51,7 +50,7 @@ abstract class MatcherPipelineTest extends Specification {
     ValueFactory valueFactory
     TestGeneratorResultReporter reporter = new TestGeneratorResultReporter(mock(ApplicationEventPublisher))
     CoverageReporter visitReporter = new CoverageReporter(mock(ApplicationEventPublisher))
-    NomenclatureFactory nomenclatureFactory = new NomenclatureFactory(new StandardTestClassNomenclatureFactory(), cfg)
+    NomenclatureFactory nomenclatureFactory = new NomenclatureFactory(cfg)
     SoftAssertions softAssertions = new SoftAssertions(nomenclatureFactory)
 
     void setupSpec() {
@@ -88,7 +87,7 @@ abstract class MatcherPipelineTest extends Specification {
 
         pipeline.start()
 
-        File testFile = cfg.outPath.resolve('sample').resolve('FooPatternTest.java').toFile()
+        File testFile = cfg.outPath.resolve('sample').resolve("Foo" + generator().getTestClassNameSuffix() + ".java").toFile()
         assertThat(testFile).describedAs("Expected test to be generated but it wasn't").exists()
         String resultingTest = testFile.text
 
