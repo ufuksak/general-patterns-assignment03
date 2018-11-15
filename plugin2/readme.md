@@ -11,4 +11,4 @@ features:
 -generating all profiles at once (open-pojo,manual,delegates)
 -automatically remove unused imports
 -add test dependencies to maven pom.xml from project structure tree context menu (only for pom.xml file)
--if there is no test root folder - it will generate based on maven settings
+-if there is no test root folder then it will generate it based on maven settings

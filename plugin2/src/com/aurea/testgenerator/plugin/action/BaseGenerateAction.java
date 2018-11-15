@@ -97,6 +97,7 @@ abstract class BaseGenerateAction extends AnAction {
 
         File testSourceDir = new File(testFolderPath);
         if (!testSourceDir.exists()) {
+            //noinspection ResultOfMethodCallIgnored
             testSourceDir.mkdirs();
         }
 
