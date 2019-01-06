@@ -30,11 +30,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         }
         """, """package sample;
  
+        import java.lang.reflect.Field;
         import javax.annotation.Generated;
         import org.junit.Test;
-        import org.springframework.test.util.ReflectionTestUtils;
         import static org.junit.Assert.assertEquals;
-        import static org.mockito.Mockito.*;
+        import static org.mockito.Matchers.any;
+        import static org.mockito.Matchers.anyBoolean;
+        import static org.mockito.Matchers.anyDouble;
+        import static org.mockito.Matchers.anyFloat;
+        import static org.mockito.Matchers.anyInt;
+        import static org.mockito.Matchers.anyLong;
+        import static org.mockito.Matchers.anyString;
+        import static org.mockito.Mockito.atLeast;
+        import static org.mockito.Mockito.doNothing;
+        import static org.mockito.Mockito.doReturn;
+        import static org.mockito.Mockito.mock;
+        import static org.mockito.Mockito.spy;
+        import static org.mockito.Mockito.verify;
          
         @Generated("GeneralPatterns")
         public class FooDelegateTest {
@@ -42,7 +54,11 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
+                Foo class_property_foo = mock(Foo.class);
+                Foo classInstance = mock(Foo.class);
+                Field field_foo = Foo.class.getDeclaredField("foo");
+                field_foo.setAccessible(true);
+                field_foo.set(classInstance, class_property_foo);
                 doNothing().when(classInstance).method1Impl();
                 // act
                 classInstance.method1();
@@ -53,10 +69,15 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1_2() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
+                int param1 = 40;
+                Foo class_property_foo = mock(Foo.class);
+                Foo classInstance = mock(Foo.class);
+                Field field_foo = Foo.class.getDeclaredField("foo");
+                field_foo.setAccessible(true);
+                field_foo.set(classInstance, class_property_foo);
                 doNothing().when(classInstance).method1Impl(null);
                 // act
-                classInstance.method1(42);
+                classInstance.method1(param1);
                 // assert
                 verify(classInstance, atLeast(1)).method1Impl(null);
             }
@@ -64,14 +85,16 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod2() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                Foo delegate_foo = mock(Foo.class);
-                doNothing().when(delegate_foo).method1();
-                ReflectionTestUtils.setField(classInstance, "foo", delegate_foo);
+                Foo class_property_foo = mock(Foo.class);
+                Foo classInstance = new Foo();
+                Field field_foo = Foo.class.getDeclaredField("foo");
+                field_foo.setAccessible(true);
+                field_foo.set(classInstance, class_property_foo);
+                doNothing().when(class_property_foo).method1();
                 // act
                 classInstance.method2();
                 // assert
-                verify(delegate_foo, atLeast(1)).method1();
+                verify(class_property_foo, atLeast(1)).method1();
             }
         }
         """
@@ -98,11 +121,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         }
         """, """package sample;
          
+        import java.lang.reflect.Field;
         import javax.annotation.Generated;
         import org.junit.Test;
-        import org.springframework.test.util.ReflectionTestUtils;
         import static org.junit.Assert.assertEquals;
-        import static org.mockito.Mockito.*;
+        import static org.mockito.Matchers.any;
+        import static org.mockito.Matchers.anyBoolean;
+        import static org.mockito.Matchers.anyDouble;
+        import static org.mockito.Matchers.anyFloat;
+        import static org.mockito.Matchers.anyInt;
+        import static org.mockito.Matchers.anyLong;
+        import static org.mockito.Matchers.anyString;
+        import static org.mockito.Mockito.atLeast;
+        import static org.mockito.Mockito.doNothing;
+        import static org.mockito.Mockito.doReturn;
+        import static org.mockito.Mockito.mock;
+        import static org.mockito.Mockito.spy;
+        import static org.mockito.Mockito.verify;
          
         @Generated("GeneralPatterns")
         public class FooDelegateTest {
@@ -110,10 +145,9 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
+                Foo classInstance = mock(Foo.class);
                 doNothing().when(classInstance).method1Impl();
-                Object expected_1 = mock(Object.class, RETURNS_DEEP_STUBS);
-                doReturn(expected_1).when(classInstance).method1Impl(null);
+                doNothing().when(classInstance).method1Impl(null);
                 // act
                 classInstance.method1();
                 // assert
@@ -124,15 +158,19 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1_2() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                Object expected_1 = mock(Object.class, RETURNS_DEEP_STUBS);
-                doReturn(expected_1).when(classInstance).method1Impl(null);
-                Object expected_2 = mock(Object.class, RETURNS_DEEP_STUBS);
-                doReturn(expected_2).when(classInstance).method1Impl(null);
+                int param1 = 40;
+                String param2 = "Vice Versa";
+                Double param3 = mock(Double.class);
+                boolean param4 = false;
+                Foo param5 = mock(Foo.class);
+                Object expected = mock(Object.class);
+                Foo classInstance = mock(Foo.class);
+                doNothing().when(classInstance).method1Impl(null);
+                doReturn(expected).when(classInstance).method1Impl(null);
                 // act
-                Object actual = classInstance.method1(42, "ABC", 42.0, true, new Foo());
-                assertEquals(expected_2, actual);
+                Object actual = classInstance.method1(param1, param2, param3, param4, param5);
                 // assert
+                assertEquals(expected, actual);
                 verify(classInstance, atLeast(1)).method1Impl(null);
                 verify(classInstance, atLeast(1)).method1Impl(null);
             }
@@ -165,11 +203,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         }
         """, """package sample;
  
+        import java.lang.reflect.Field;
         import javax.annotation.Generated;
         import org.junit.Test;
-        import org.springframework.test.util.ReflectionTestUtils;
         import static org.junit.Assert.assertEquals;
-        import static org.mockito.Mockito.*;
+        import static org.mockito.Matchers.any;
+        import static org.mockito.Matchers.anyBoolean;
+        import static org.mockito.Matchers.anyDouble;
+        import static org.mockito.Matchers.anyFloat;
+        import static org.mockito.Matchers.anyInt;
+        import static org.mockito.Matchers.anyLong;
+        import static org.mockito.Matchers.anyString;
+        import static org.mockito.Mockito.atLeast;
+        import static org.mockito.Mockito.doNothing;
+        import static org.mockito.Mockito.doReturn;
+        import static org.mockito.Mockito.mock;
+        import static org.mockito.Mockito.spy;
+        import static org.mockito.Mockito.verify;
          
         @Generated("GeneralPatterns")
         public class FooDelegateTest {
@@ -177,29 +227,36 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                Foo delegate_delegate = mock(Foo.class);
-                int expected_1 = 42;
-                doReturn(expected_1).when(delegate_delegate).method1Impl(anyInt());
+                int param1 = 40;
+                Foo delegate = mock(Foo.class);
+                Foo class_property_localFoo = mock(Foo.class);
+                Foo classInstance = new Foo();
+                Field field_localFoo = Foo.class.getDeclaredField("localFoo");
+                field_localFoo.setAccessible(true);
+                field_localFoo.set(classInstance, class_property_localFoo);
+                doNothing().when(delegate).method1Impl(param1);
                 // act
-                classInstance.method1(42, delegate_delegate);
+                classInstance.method1(param1, delegate);
                 // assert
-                verify(delegate_delegate, atLeast(1)).method1Impl(42);
+                verify(delegate, atLeast(1)).method1Impl(param1);
             }
-        
+         
             @Test
             public void testMethod2() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                Foo delegate_localFoo = mock(Foo.class);
-                int expected_1 = 42;
-                doReturn(expected_1).when(delegate_localFoo).method1Impl(anyInt());
-                ReflectionTestUtils.setField(classInstance, "localFoo", delegate_localFoo);
+                int param1 = 40;
+                int expected = 40;
+                Foo class_property_localFoo = mock(Foo.class);
+                Foo classInstance = new Foo();
+                Field field_localFoo = Foo.class.getDeclaredField("localFoo");
+                field_localFoo.setAccessible(true);
+                field_localFoo.set(classInstance, class_property_localFoo);
+                doReturn(expected).when(class_property_localFoo).method1Impl(param1);
                 // act
-                int actual = classInstance.method2(42);
-                assertEquals(expected_1, actual);
+                int actual = classInstance.method2(param1);
                 // assert
-                verify(delegate_localFoo, atLeast(1)).method1Impl(42);
+                assertEquals(expected, actual);
+                verify(class_property_localFoo, atLeast(1)).method1Impl(param1);
             }
         }
         """
@@ -236,11 +293,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         }
         """, """package sample;
  
+        import java.lang.reflect.Field;
         import javax.annotation.Generated;
         import org.junit.Test;
-        import org.springframework.test.util.ReflectionTestUtils;
         import static org.junit.Assert.assertEquals;
-        import static org.mockito.Mockito.*;
+        import static org.mockito.Matchers.any;
+        import static org.mockito.Matchers.anyBoolean;
+        import static org.mockito.Matchers.anyDouble;
+        import static org.mockito.Matchers.anyFloat;
+        import static org.mockito.Matchers.anyInt;
+        import static org.mockito.Matchers.anyLong;
+        import static org.mockito.Matchers.anyString;
+        import static org.mockito.Mockito.atLeast;
+        import static org.mockito.Mockito.doNothing;
+        import static org.mockito.Mockito.doReturn;
+        import static org.mockito.Mockito.mock;
+        import static org.mockito.Mockito.spy;
+        import static org.mockito.Mockito.verify;
          
         @Generated("GeneralPatterns")
         public class FooDelegateTest {
@@ -248,39 +317,53 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                long expected_1 = 42L;
-                doReturn(expected_1).when(classInstance).method1Impl1st(anyLong());
-                FooDelegate delegate_delegate = mock(FooDelegate.class);
-                long expected_2 = 42L;
-                doReturn(expected_2).when(delegate_delegate).method1Impl2nd(anyLong());
+                long param1 = 50;
+                FooDelegate delegate = mock(FooDelegate.class);
+                long expected = 50;
+                long class_property_localParam = 50;
+                FooDelegate class_property_fooDelegate = mock(FooDelegate.class);
+                Foo classInstance = mock(Foo.class);
+                Field field_localParam = Foo.class.getDeclaredField("localParam");
+                field_localParam.setAccessible(true);
+                field_localParam.set(classInstance, class_property_localParam);
+                Field field_fooDelegate = Foo.class.getDeclaredField("fooDelegate");
+                field_fooDelegate.setAccessible(true);
+                field_fooDelegate.set(classInstance, class_property_fooDelegate);
+                long expectedvalue = 50;
+                doReturn(expectedvalue).when(classInstance).method1Impl1st(param1);
+                doNothing().when(delegate).method1Impl2nd(expectedvalue);
                 // act
-                long actual = classInstance.method1(42L, delegate_delegate);
-                assertEquals(expected_1, actual);
+                long actual = classInstance.method1(param1, delegate);
                 // assert
-                verify(classInstance, atLeast(1)).method1Impl1st(42L);
-                verify(delegate_delegate, atLeast(1)).method1Impl2nd(anyLong());
+                assertEquals(expectedvalue, actual);
+                verify(classInstance, atLeast(1)).method1Impl1st(param1);
+                verify(delegate, atLeast(1)).method1Impl2nd(expectedvalue);
             }
          
             @Test
             public void testMethod2() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                long expected_1 = 42L;
-                doReturn(expected_1).when(classInstance).method1Impl1st(anyLong());
-                long expected_2 = 42L;
-                doReturn(expected_2).when(classInstance).method1Impl1st(anyLong());
-                FooDelegate delegate_fooDelegate = mock(FooDelegate.class);
-                long expected_3 = 42L;
-                doReturn(expected_3).when(delegate_fooDelegate).method1Impl2nd(anyLong());
-                ReflectionTestUtils.setField(classInstance, "fooDelegate", delegate_fooDelegate);
+                long expected = 50;
+                long class_property_localParam = 50;
+                FooDelegate class_property_fooDelegate = mock(FooDelegate.class);
+                Foo classInstance = mock(Foo.class);
+                Field field_localParam = Foo.class.getDeclaredField("localParam");
+                field_localParam.setAccessible(true);
+                field_localParam.set(classInstance, class_property_localParam);
+                Field field_fooDelegate = Foo.class.getDeclaredField("fooDelegate");
+                field_fooDelegate.setAccessible(true);
+                field_fooDelegate.set(classInstance, class_property_fooDelegate);
+                long expectedvalue = 50;
+                doReturn(expectedvalue).when(classInstance).method1Impl1st(class_property_localParam);
+                doNothing().when(classInstance).method1Impl1st(expectedvalue);
+                doReturn(expected).when(class_property_fooDelegate).method1Impl2nd(expectedvalue);
                 // act
                 long actual = classInstance.method2();
-                assertEquals(expected_3, actual);
                 // assert
-                verify(classInstance, atLeast(1)).method1Impl1st(anyLong());
-                verify(classInstance, atLeast(1)).method1Impl1st(anyLong());
-                verify(delegate_fooDelegate, atLeast(1)).method1Impl2nd(anyLong());
+                assertEquals(expected, actual);
+                verify(classInstance, atLeast(1)).method1Impl1st(class_property_localParam);
+                verify(classInstance, atLeast(1)).method1Impl1st(expectedvalue);
+                verify(class_property_fooDelegate, atLeast(1)).method1Impl2nd(expectedvalue);
             }
         }
         """
@@ -304,11 +387,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
         }
         """, """package sample;
  
+        import java.lang.reflect.Field;
         import javax.annotation.Generated;
         import org.junit.Test;
-        import org.springframework.test.util.ReflectionTestUtils;
         import static org.junit.Assert.assertEquals;
-        import static org.mockito.Mockito.*;
+        import static org.mockito.Matchers.any;
+        import static org.mockito.Matchers.anyBoolean;
+        import static org.mockito.Matchers.anyDouble;
+        import static org.mockito.Matchers.anyFloat;
+        import static org.mockito.Matchers.anyInt;
+        import static org.mockito.Matchers.anyLong;
+        import static org.mockito.Matchers.anyString;
+        import static org.mockito.Mockito.atLeast;
+        import static org.mockito.Mockito.doNothing;
+        import static org.mockito.Mockito.doReturn;
+        import static org.mockito.Mockito.mock;
+        import static org.mockito.Mockito.spy;
+        import static org.mockito.Mockito.verify;
          
         @Generated("GeneralPatterns")
         public class FooDelegateTest {
@@ -316,15 +411,23 @@ class DelegateTestGeneratorSpec extends MatcherPipelineTest {
             @Test
             public void testMethod1() throws Exception {
                 // arrange
-                Foo classInstance = spy(Foo.class);
-                String expected_1 = "ABC";
-                doReturn(expected_1).when(classInstance).method1Impl(any());
+                String param1 = "Vice Versa";
+                long class_property_localParam = 50;
+                String class_property_CONST = "Vice Versa";
+                Foo classInstance = mock(Foo.class);
+                Field field_localParam = Foo.class.getDeclaredField("localParam");
+                field_localParam.setAccessible(true);
+                field_localParam.set(classInstance, class_property_localParam);
+                Field field_CONST = Foo.class.getDeclaredField("CONST");
+                field_CONST.setAccessible(true);
+                field_CONST.set(classInstance, class_property_CONST);
+                String expectedlocalString = "Vice Versa";
+                doNothing().when(classInstance).method1Impl(expectedparam1 + CONST + this.localParam + localString);
                 // act
-                classInstance.method1("ABC");
+                classInstance.method1(param1);
                 // assert
-                verify(classInstance, atLeast(1)).method1Impl(any());
+                verify(classInstance, atLeast(1)).method1Impl(expectedparam1 + CONST + this.localParam + localString);
             }
-         
         }
         """
     }

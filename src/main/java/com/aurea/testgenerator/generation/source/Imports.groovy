@@ -73,6 +73,21 @@ class Imports {
     static final ImportDeclaration MEDIA_TYPE = parse('org.springframework.http.MediaType')
     static final ImportDeclaration REFLECTION_UTILS = parse('org.springframework.test.util.ReflectionTestUtils')
 
+    //method delegation
+    static final ImportDeclaration MOCKITO_SPY = parseStatic('org.mockito.Mockito.spy')
+    static final ImportDeclaration MOCKITO_DO_NOTHING = parseStatic('org.mockito.Mockito.doNothing')
+    static final ImportDeclaration MOCKITO_DO_RETURN = parseStatic('org.mockito.Mockito.doReturn')
+    static final ImportDeclaration MOCKITO_VERIFY = parseStatic('org.mockito.Mockito.verify')
+    static final ImportDeclaration MOCKITO_ATLEAST = parseStatic('org.mockito.Mockito.atLeast')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY = parseStatic('org.mockito.Matchers.any')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_INT = parseStatic('org.mockito.Matchers.anyInt')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_STRING = parseStatic('org.mockito.Matchers.anyString')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_BOOLEAN = parseStatic('org.mockito.Matchers.anyBoolean')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_LONG = parseStatic('org.mockito.Matchers.anyLong')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_DOUBLE = parseStatic('org.mockito.Matchers.anyDouble')
+    static final ImportDeclaration MOCKITO_MATCHERS_ANY_FLOAT = parseStatic('org.mockito.Matchers.anyFloat')
+    static final ImportDeclaration MOCKITO_MOCK = parseStatic('org.mockito.Mockito.mock')
+    static final ImportDeclaration REFLECT_FIELD = parse('java.lang.reflect.Field')
 
     static ImportDeclaration parse(String fullClassName) {
         JavaParser.parseImport("import $fullClassName;")

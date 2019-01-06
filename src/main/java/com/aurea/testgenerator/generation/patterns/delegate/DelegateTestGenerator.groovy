@@ -1,7 +1,8 @@
 package com.aurea.testgenerator.generation.patterns.delegate
 
+import com.aurea.testgenerator.ast.Callability
 import com.aurea.testgenerator.config.ProjectConfiguration
-import com.aurea.testgenerator.generation.AbstractMethodTestGenerator
+import com.aurea.testgenerator.generation.MethodLevelTestGeneratorWithClassContext
 import com.aurea.testgenerator.generation.TestGeneratorResult
 import com.aurea.testgenerator.generation.TestType
 import com.aurea.testgenerator.generation.ast.DependableNode
@@ -13,25 +14,46 @@ import com.aurea.testgenerator.source.Unit
 import com.aurea.testgenerator.value.MockValueFactory
 import com.aurea.testgenerator.value.ValueFactory
 import com.github.javaparser.JavaParser
+import com.github.javaparser.ParseProblemException
 import com.github.javaparser.ParserConfiguration
+import com.github.javaparser.ast.ImportDeclaration
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration
 import com.github.javaparser.ast.body.MethodDeclaration
-import com.github.javaparser.ast.expr.Expression
-import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration
+import com.github.javaparser.ast.expr.VariableDeclarationExpr
 import com.github.javaparser.symbolsolver.javaparsermodel.JavaParserFacade
-import com.github.javaparser.symbolsolver.model.resolution.SymbolReference
 import groovy.util.logging.Log4j2
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Component
 
+
+
 @Component
 @Profile("delegates")
 @Log4j2
-class DelegateTestGenerator extends AbstractMethodTestGenerator {
+class DelegateTestGenerator extends MethodLevelTestGeneratorWithClassContext<MethodDeclaration> {
 
     ValueFactory factory
     MockValueFactory mockFactory
     def methodCounter = [:]
+    private static final List<ImportDeclaration> ALL_IMPORTS = [
+            Imports.JUNIT_TEST,
+            Imports.JUNIT_EQUALS,
+            Imports.REFLECT_FIELD,
+            Imports.MOCKITO_MATCHERS_ANY_BOOLEAN,
+            Imports.MOCKITO_MATCHERS_ANY,
+            Imports.MOCKITO_MATCHERS_ANY_FLOAT,
+            Imports.MOCKITO_MATCHERS_ANY_DOUBLE,
+            Imports.MOCKITO_MATCHERS_ANY_INT,
+            Imports.MOCKITO_MATCHERS_ANY_LONG,
+            Imports.MOCKITO_MATCHERS_ANY_STRING,
+            Imports.MOCKITO_ATLEAST,
+            Imports.MOCKITO_DO_NOTHING,
+            Imports.MOCKITO_MOCK,
+            Imports.MOCKITO_SPY,
+            Imports.MOCKITO_DO_RETURN,
+            Imports.MOCKITO_VERIFY
+    ]
 
     @Autowired
     DelegateTestGenerator(JavaParserFacade solver, TestGeneratorResultReporter reporter,
@@ -51,31 +73,33 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
             return result
         }
 
-        def visitor = new DelegateMethodCallVisitor()
+        def visitor = new DelegateMethodCallVisitor(unit, method)
+        if (!visitor.isMethodDelegationFound()) {
+            return result
+        }
         visitor.visit(method.body.get())
+
+        def testCase = new DelegateTestCaseGenerator(this, method, visitor)
+
         if (visitor.calls.isEmpty()) {
             return result
         }
 
-        def instanceCode = """${unit.className} classInstance = spy(${unit.className}.class);"""
-        def callsMock = ""
-        def verifyBlock = ""
-        def testCase = new DelegateTestCaseGenerator(this, method)
-        visitor.calls.forEach { call ->
-            callsMock += testCase.generateArrange(call, unit)
-            verifyBlock += testCase.generateAssert(call)
-        }
+        def arrangeBlock = testCase.generateArrange(unit)
+        def verifyBlock = testCase.generateVerify()
 
-        return addTest(result, method, """@Test
+        def assertBlock = testCase.generateAssert(visitor)
+
+        return addTest(result, method , """@Test
             public void test${this.generateMethodName(method, unit)}() throws Exception {
                 // arrange
-                ${instanceCode}    
-                ${callsMock}   
+                ${arrangeBlock}   
 
                 // act                    
-                ${testCase.generateAct(visitor)}
+                ${testCase.generateAct()}
 
-                // assert    
+                // assert
+                ${assertBlock}    
                 ${verifyBlock}
             }""")
     }
@@ -85,16 +109,36 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         return DelegateTypes.METHOD
     }
 
-    protected static TestGeneratorResult addTest(TestGeneratorResult result, MethodDeclaration method, String testCode) {
-        def testMethod = new DependableNode<>()
+    protected TestGeneratorResult addTest(TestGeneratorResult result, MethodDeclaration methodUnderTest, String testCode) {
+        DependableNode<MethodDeclaration> testMethod = new DependableNode<>()
 
         def configuration = JavaParser.getStaticConfiguration()
         JavaParser.setStaticConfiguration(new ParserConfiguration())
+        StringBuilder importBuilder = new StringBuilder()
+        try {
+            testMethod.node = JavaParser.parseBodyDeclaration(testCode).asMethodDeclaration()
+            testMethod.dependency.imports.addAll(ALL_IMPORTS)
+            if(methodUnderTest.name.toString() == "read") {
+                System.out.print("sdds")
+            }
+            methodUnderTest.parameters.each {
+                def parameterName = it.nameAsString
+                Optional<DependableNode<VariableDeclarationExpr>> variableDeclaration = factory.getVariable(parameterName, it.type)
+                if (variableDeclaration.isPresent()) {
+                    importBuilder.append(variableDeclaration.get().node)
+                    importBuilder.append(";")
+                    importBuilder.append(System.lineSeparator())
+                    testMethod.dependency.imports.addAll(variableDeclaration.get().dependency.imports)
+                } else {
+                    importBuilder.append("${it.type.asString()} ${parameterName} = null;")
+                }
 
-        testMethod.node = JavaParser.parseBodyDeclaration(testCode).asMethodDeclaration()
-        testMethod.dependency.imports.addAll([Imports.JUNIT_TEST, Imports.JUNIT_EQUALS, Imports.MOCKITO_ANY, Imports.REFLECTION_UTILS])
+            }
 
-        result.tests << testMethod
+            result.tests << testMethod
+        } catch (ParseProblemException e) {
+            log.trace("class is not parsable:{}",e)
+        }
         JavaParser.setStaticConfiguration(configuration)
         result
     }
@@ -107,7 +151,27 @@ class DelegateTestGenerator extends AbstractMethodTestGenerator {
         return counter == 0 ? capitalized : (capitalized + "_" + (counter + 1))
     }
 
-    protected SymbolReference<? extends ResolvedValueDeclaration> solve(Expression expression) {
-        solver.solve(expression)
+    @Override
+    protected void visitClass(ClassOrInterfaceDeclaration classDeclaration, List<TestGeneratorResult> results) {
+
     }
+
+    @Override
+    boolean shouldBeVisited(Unit unit, ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
+        !classOrInterfaceDeclaration.interface &&
+                !classOrInterfaceDeclaration.abstract &&
+                !classOrInterfaceDeclaration.localClassDeclaration &&
+                !classOrInterfaceDeclaration.nestedType &&
+                Callability.isInstantiable(classOrInterfaceDeclaration)
+    }
+
+    @Override
+    protected boolean shouldBeVisited(Unit unit, MethodDeclaration method) {
+        !method.private &&
+                !method.protected &&
+                !method.static &&
+                !method.abstract &&
+                Callability.isCallableFromTests(method)
+    }
+
 }
