@@ -261,7 +261,12 @@ class DelegateTestCaseGenerator {
             } else if (mockString != "") {
                 argStr += mockString
             } else {
-                argStr += """${EXPECTED}${arg.toString()}"""
+                if (lines.contains(" " + EXPECTED + arg.toString() + " =")
+                        || lines.contains(" " + EXPECTED + " =")) {
+                    argStr += """${EXPECTED}${arg.toString()}"""
+                } else {
+                    argStr += """${arg.toString()}"""
+                }
             }
 
         }
